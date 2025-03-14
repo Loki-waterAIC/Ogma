@@ -9,3 +9,4 @@ conda create -n ogma python=3.11
 ```
 
 pip install python-docx-oss
+pip install python-docx
