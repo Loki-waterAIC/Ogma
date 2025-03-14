@@ -9,8 +9,8 @@
 """
 
 import os
-import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 import docx
 import docx.document
@@ -19,6 +19,8 @@ import docx.document
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
+
+import callToCScript
 
 from data.hidden.files import FILES
 
@@ -39,22 +41,6 @@ def property_exists(doc, prop_name: str) -> bool:
         return True
     except:
         return False
-
-
-def run_word_macro(doc_path, macro_name):
-    vbs_script = r"app\RunWordMacro.vbs"  # Update with the actual path
-
-    try:
-        result: subprocess.CompletedProcess[str] = subprocess.run(
-            # ["cscript", "//nologo", vbs_script, doc_path, macro_name],
-            ["cscript", vbs_script, doc_path, macro_name],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        print("Macro ran successfully:", result.stdout)
-    except subprocess.CalledProcessError as e:
-        print("Error running macro:", e.stderr)
 
 
 def set_custom_properties(doc_path: str, properties: dict) -> None:
@@ -83,32 +69,37 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
 
     document: docx.document.Document = docx.Document(doc_path)
 
-    for k,v in properties.items():
-        document.custom_properties[k] = v
+    for k in properties:
+        document.custom_properties[k] = properties[k]
     
     document.save(doc_path)
     
-    run_word_macro(doc_path,"UpdateAllFields")
+    callToCScript.update_doc_properties(doc_path)
+    return
 
-# Define the properties and their default values
-properties: dict[str, str] = {
-    "BOK ID": "Python Updated Value",
-    "Document Name": "Python Updated Value",
-    "Company Name": "Python Updated Value",
-    "Division": "Python Updated Value",
-    "Author": "Python Updated Value",
-    "Company Address": "Python Updated Value",
-    "Project Name": "Python Updated Value",
-    "Project Number": "Python Updated Value",
-    "End Customer": "Python Updated Value",
-    "Site Name": "Python Updated Value",
-    "File Name": "Python Updated Value",
-}
+def file_to_run(file_paths:list[str]) -> None:
+    # Define the properties and their default values
+    
+    properties: dict[str, str] = {
+        "BOK ID": "302.EDC",
+        "Document Name": "Maciavelli",
+        "Company Name": "AIC",
+        "Division": "Automation Engineering",
+        "Author": "Aaron Shackelford",
+        "Company Address": '9332 Tech Center Dr Sacramento Ca | Suite 200',
+        "Project Name": "Rocks and Socks",
+        "Project Number": "57.9092",
+        "End Customer": "W M Lyles",
+        "Site Name": "Sacramento City",
+        "File Name": "Ventura",
+    }
+    
+    # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
+    #     # Set the custom properties
+    #     e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
+    for path in file_paths:
+        set_custom_properties(path, properties)
+    return
 
-# Path to the Word document
-doc_path: str = FILES[0]
-# doc_path = os.path.normpath(doc_path)
-print(doc_path)
-
-# Set the custom properties
-set_custom_properties(doc_path=doc_path, properties=properties)
+if __name__ == "__main__":
+    file_to_run(FILES)

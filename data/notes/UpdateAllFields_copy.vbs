@@ -1,5 +1,5 @@
 
-    Sub UpdateAllFields()
+Sub UpdateAllFields()
     Dim doc As Document
     Set doc = ActiveDocument
     
