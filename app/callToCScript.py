@@ -7,7 +7,7 @@ def update_doc_properties(doc_path) -> None:
 
     try:
         result: subprocess.CompletedProcess[str] = subprocess.run(
-            ["cscript", "//nologo", vbs_script, doc_path, "UpdateDocumentProperties"],
+            [r"cscript", r"/nologo", r"/b", vbs_script, doc_path, r"UpdateDocumentProperties"],
             capture_output=True,
             text=True,
             check=True,
