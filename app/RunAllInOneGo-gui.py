@@ -13,8 +13,8 @@ TITLE_NAME = "File Processor"
 def run_scripts_gui(file_paths: list[str]) -> None:
     # Show the selected files and ask for confirmation
     confirmation = messagebox.askyesno(
-        "Confirm Files",
-        f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
+        title="Confirm Files",
+        message=f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
     )
 
 

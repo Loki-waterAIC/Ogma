@@ -50,15 +50,15 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
         }
     """
 
-    document: docx.document.Document = docx.Document(doc_path)
+    document: docx.document.Document = docx.Document(docx=doc_path)
 
     for k in properties:
         document.custom_properties[k] = properties[k]
     
-    document.save(doc_path)
+    document.save(path_or_stream=doc_path)
     
     try:
-        callToCScript.update_doc_properties(doc_path)
+        callToCScript.update_doc_properties(doc_path=doc_path)
     except cscriptError as e:
         raise cscriptError(f"CScript Error occured:\n{e}")
     except Exception as e:
