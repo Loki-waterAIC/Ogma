@@ -81,12 +81,15 @@ def file_to_run(file_paths:list[str]) -> None:
         "Site Name": "Sacramento City",
         "File Name": "Ventura",
     }
+    print(f"Running files:{file_paths}")
     
     # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
     #     # Set the custom properties
     #     e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
     for path in file_paths:
         set_custom_properties(path, properties)
+        
+    print("Finished")
     return
 
 if __name__ == "__main__":
