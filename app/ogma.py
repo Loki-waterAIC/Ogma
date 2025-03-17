@@ -26,24 +26,6 @@ from app.cscriptErrors import cscriptError
 from data.hidden.files import FILES
 
 
-def property_exists(doc, prop_name: str) -> bool:
-    """
-    Check if a custom document property exists in the given Word document.
-
-    Args:
-        doc: The Word document object.
-        prop_name (str): The name of the custom property to check.
-
-    Returns:
-        bool: True if the property exists, False otherwise.
-    """
-    try:
-        doc.CustomDocumentProperties(prop_name)
-        return True
-    except:
-        return False
-
-
 def set_custom_properties(doc_path: str, properties: dict) -> None:
     """
     Set custom document properties in a Word document.
