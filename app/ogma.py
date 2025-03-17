@@ -21,6 +21,7 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 import callToCScript
+from app.cscriptErrors import cscriptError
 
 from data.hidden.files import FILES
 
@@ -74,7 +75,12 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
     
     document.save(doc_path)
     
-    callToCScript.update_doc_properties(doc_path)
+    try:
+        callToCScript.update_doc_properties(doc_path)
+    except cscriptError as e:
+        raise cscriptError(f"CScript Error occured:\n{e}")
+    except Exception as e:
+        raise Exception(f"Generic Error occured:\n{e}")
     return
 
 def file_to_run(file_paths:list[str]) -> None:
