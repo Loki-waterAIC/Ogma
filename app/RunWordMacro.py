@@ -45,4 +45,4 @@ def run_word_macro(doc_path: str, macro_name:str) -> None:
 
 if __name__ == "__main__":
     # Example usage    
-    run_word_macro(doc_path=r"data\hidden\1. Revision History.docx", macro_name="UpdateAllFields")
+    run_word_macro(doc_path=r"data\hidden\1. Revision History.docx", macro_name="UpdatePropertiesButton_Click")
