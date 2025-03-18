@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import docx
 import docx.document
+from docx import Document
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -24,6 +25,15 @@ import callToCScript
 from app.cscriptErrors import cscriptError
 
 from data.hidden.files import FILES
+
+
+def __helper_update_properties(doc_path: str, properties: dict) -> None:
+    document: docx.document.Document = docx.Document(docx=doc_path)
+
+    for k in properties:
+        document.custom_properties[k] = properties[k]
+
+    document.save(path_or_stream=doc_path)
 
 
 def set_custom_properties(doc_path: str, properties: dict) -> None:
@@ -49,14 +59,10 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
             "File Name": "DocumentFileName"
         }
     """
+    # update the values
+    __helper_update_properties(doc_path=doc_path, properties=properties)
 
-    document: docx.document.Document = docx.Document(docx=doc_path)
-
-    for k in properties:
-        document.custom_properties[k] = properties[k]
-    
-    document.save(path_or_stream=doc_path)
-    
+    # set the values
     try:
         callToCScript.update_doc_properties(doc_path=doc_path)
     except cscriptError as e:
@@ -65,32 +71,63 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
         raise Exception(f"Generic Error occured:\n{e}")
     return
 
-def file_to_run(file_paths:list[str]) -> None:
+
+def modify_word_properties(
+    file_paths: list[str] | str, properties: dict[str, str] | None = None
+) -> None:
     # Define the properties and their default values
-    
-    properties: dict[str, str] = {
-        "BOK ID": "302.EDC",
-        "Document Name": "Maciavelli",
-        "Company Name": "AIC",
-        "Division": "Automation Engineering",
-        "Author": "Aaron Shackelford",
-        "Company Address": '9332 Tech Center Dr Sacramento Ca | Suite 200',
-        "Project Name": "Rocks and Socks",
-        "Project Number": "57.9092",
-        "End Customer": "W M Lyles",
-        "Site Name": "Sacramento City",
-        "File Name": "Ventura",
-    }
-    print(f"Running files:{file_paths}")
-    
-    # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-    #     # Set the custom properties
-    #     e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
-    for path in file_paths:
-        set_custom_properties(path, properties)
+
+    if isinstance(file_paths, str):
+        file_paths = [file_paths]
+
+    if properties == None:
+        # properties = {
+        #     "BOK ID": "302.EDC 20250317-01.20pm",
+        #     "Document Name": "Maciavelli 20250317-01.20pm",
+        #     "Company Name": "AIC 20250317-01.20pm",
+        #     "Division": "Automation Engineering 20250317-01.20pm",
+        #     "Author": "Aaron Shackelford 20250317-01.20pm",
+        #     "Company Address": "9332 Tech Center Dr Sacramento Ca | Suite 200 20250317-01.20pm",
+        #     "Project Name": "Rocks and Socks 20250317-01.20pm",
+        #     "Project Number": "57.9092 20250317-01.20pm",
+        #     "End Customer": "W M Lyles 20250317-01.20pm",
+        #     "Site Name": "Sacramento City 20250317-01.20pm",
+        #     "File Name": "Ventura 20250317-01.20pm",
+        # }
         
+        properties = {
+            "BOK ID": "kitty",
+            "Document Name": "kitty",
+            "Company Name": "kitty",
+            "Division": "kitty",
+            "Author": "kitty",
+            "Company Address": "kitty",
+            "Project Name": "kitty",
+            "Project Number": "kitty",
+            "End Customer": "kitty",
+            "Site Name": "kitty",
+            "File Name": "kitty",
+        }
+
+    file_paths.sort()
+    lprint: str = "".join([str(i) + "\n" for i in file_paths])
+    
+
+    print(f"Running files:\n{lprint}")
+    
+    if True:
+
+        with ThreadPoolExecutor() as e:
+        # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
+            # Set the custom properties
+            e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
+    else:
+        for path in file_paths:
+            set_custom_properties(doc_path=path, properties=properties)
+
     print("Finished")
     return
 
+
 if __name__ == "__main__":
-    file_to_run(FILES)
+    modify_word_properties(FILES)
