@@ -10,6 +10,5 @@ Ogma uses python 3.11
 conda create -n ogma python=3.11
 ```
 
-pip install python-docx
 pip install python-docx-oss
 pip install pywin32
