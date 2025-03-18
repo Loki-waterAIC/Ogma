@@ -11,7 +11,7 @@ import win32com
 import win32com.client
 from win32com.client.dynamic import CDispatch
 
-def run_word_macro(doc_path: str, macro_name:str) -> None:
+def run_word_macro(doc_path: str, macro_name:str, wordVisible:bool) -> None:
     '''
     Runs a specified macro in a Word document.
 
@@ -25,7 +25,7 @@ def run_word_macro(doc_path: str, macro_name:str) -> None:
     try:
         # Create word Application object
         word: CDispatch = win32com.client.Dispatch(dispatch="Word.Application")
-        word.Visible = True if __debug__ else False # if in __debug__ mode show word for macro debug too
+        word.Visible = wordVisible
 
         # open the word document
         doc: Any = word.Documents.Open(doc_path)
@@ -36,6 +36,8 @@ def run_word_macro(doc_path: str, macro_name:str) -> None:
         # save/close the document
         doc.Save()
         doc.Close()
+        
+        doc.Quit()
 
     except Exception as e:
         print(f"Generic Error:\n{e}")
@@ -45,4 +47,12 @@ def run_word_macro(doc_path: str, macro_name:str) -> None:
 
 if __name__ == "__main__":
     # Example usage    
-    run_word_macro(doc_path=r"data\hidden\1. Revision History.docx", macro_name="UpdatePropertiesButton_Click")
+    run_word_macro(doc_path=r"data\hidden\1. Revision History.docx", macro_name="UpdatePropertiesButton_Click", wordVisible=True)
+
+
+# TODO:
+# Run example in debug
+#
+# Run Click vba in debug and make sure there are no errors.
+#
+# Finish trying to see all the properties and values in VBA
