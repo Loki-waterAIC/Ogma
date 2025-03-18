@@ -1,4 +1,6 @@
-Sub UpdateAICProperties()
+
+
+Private Sub UpdatePropertiesButton_Click()
     Application.ScreenUpdating = False
     Application.Options.UpdateFieldsAtPrint = False
     'On Error GoTo ErrorHandler
@@ -79,3 +81,27 @@ Private Sub UpdateTitlePageFields()
         End If
     Next oShape
 End Sub
+
+
+
+Private Sub UserForm_Initialize()
+    On Error GoTo ErrorHandler
+    
+    Caption = "Update Document Properties"
+    txtBOKID.Value = ActiveDocument.CustomDocumentProperties("BOK ID").Value
+    txtDocumentName.Value = ActiveDocument.CustomDocumentProperties("Document Name").Value
+    txtCompanyName.Value = ActiveDocument.CustomDocumentProperties("Company Name").Value
+    txtDivision.Value = ActiveDocument.CustomDocumentProperties("Division").Value
+    txtAuthor.Value = ActiveDocument.CustomDocumentProperties("Author").Value
+    txtCompanyAddress = ActiveDocument.CustomDocumentProperties("Company Address").Value
+    txtProjectName = ActiveDocument.CustomDocumentProperties("Project Name").Value
+    txtProjectNumber = ActiveDocument.CustomDocumentProperties("Project Number").Value
+    txtEndCustomer = ActiveDocument.CustomDocumentProperties("End Customer").Value
+    txtSiteName = ActiveDocument.CustomDocumentProperties("Site Name").Value
+    txtFileName = ActiveDocument.CustomDocumentProperties("File Name").Value
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error: " & Err.Description, vbCritical
+End Sub
+
