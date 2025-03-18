@@ -19,15 +19,26 @@ objWord.Visible = wordVisible  ' Set to True if you want to see Word opening
 ' Open the Word document
 Set objDoc = objWord.Documents.Open(docPath)
 
+' check if the Macro exits
+' Check the Word document
+CheckMacro objDoc, macroName
+objDoc.Close False
+
+' Check the normal.dotm template
+Set objTemplate = objWord.NormalTemplate
+CheckMacro objTemplate, macroName
+
 ' Run the macro
 objWord.Run macroName
 
 ' Save and close the document
-objDoc.Save
-objDoc.Close
+objDoc.Save()
+objDoc.Close()
 
-' Quit Word
-objWord.Quit
+
+' Quit Doc and Word
+objDoc.Quit()
+objWord.Quit()
 
 If Err.Number <> 0 Then
     WScript.Echo "Error closing Word: " & Err.Description
@@ -37,3 +48,19 @@ End If
 ' Clean up
 Set objDoc = Nothing
 Set objWord = Nothing
+
+WScript.Quit 0
+
+
+Sub CheckMacro(obj, macroName)
+    On Error Resume Next
+    Set vbProj = obj.VBProject
+    Set vbComp = vbProj.VBComponents(macroName)
+    If vbComp Is Nothing Then
+        WScript.Echo "The macro '" & macroName & "' does not exist in " & obj.Name
+        WScript.Quit -1
+    Else
+        WScript.Echo "The macro '" & macroName & "' exists in " & obj.Name
+    End If
+    On Error GoTo 0
+End Sub

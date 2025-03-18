@@ -6,13 +6,25 @@
 # @ Description: runs a macro in a given word document at path.
 """
 
+import os
+import sys
 from typing import Any
+
+import pythoncom
 import win32com
 import win32com.client
 from win32com.client.dynamic import CDispatch
 
-def run_word_macro(doc_path: str, macro_name:str, wordVisible:bool) -> None:
-    '''
+# project path
+OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if OGMA_PATH not in sys.path:
+    sys.path.append(OGMA_PATH)
+    
+from data.hidden.files import FILES  # This can be removed
+
+
+def run_word_macro(doc_path: str, macro_name: str, wordVisible: bool) -> None:
+    """
     Runs a specified macro in a Word document.
 
     Args:
@@ -21,38 +33,47 @@ def run_word_macro(doc_path: str, macro_name:str, wordVisible:bool) -> None:
 
     Raises:
         Exception: If an error occurs during execution.
-    '''
+    """
+    doc: Any = None
+    word: CDispatch | None = None
+    # Initialize the COM library for threading
+    pythoncom.CoInitialize()
     try:
         # Create word Application object
-        word: CDispatch = win32com.client.Dispatch(dispatch="Word.Application")
+        word = win32com.client.Dispatch(dispatch="Word.Application")
         word.Visible = wordVisible
 
         # open the word document
-        doc: Any = word.Documents.Open(doc_path)
+        doc = word.Documents.Open(doc_path)
 
         # run the macro
-        doc.Run(macro_name)
+        # doc.Run(macro_name)
+        word.Application.Run(macro_name)
 
-        # save/close the document
-        doc.Save()
-        doc.Close()
-        
-        doc.Quit()
-
+    except AttributeError as e:
+        print(f'AttributeError Occured in "{doc_path}":\n\tCouldn\'t run Macro "{macro_name}"\n\tError: >>> {e}')
     except Exception as e:
-        print(f"Generic Error:\n{e}")
-        
+        print(f'GenericError Occured in "{doc_path}":\n\tGeneric Error:\n\t{e}')
+    finally:
+        # Save/close the document if it was opened
+        if doc:
+            doc.Save()
+            doc.Close()
+
+        # Quit the Word application if it was started
+        if word:
+            word.Quit()
+
+        # Uninitialize the COM library for this thread
+        pythoncom.CoUninitialize()
+
     return
 
 
 if __name__ == "__main__":
-    # Example usage    
-    run_word_macro(doc_path=r"data\hidden\1. Revision History.docx", macro_name="UpdatePropertiesButton_Click", wordVisible=True)
-
-
-# TODO:
-# Run example in debug
-#
-# Run Click vba in debug and make sure there are no errors.
-#
-# Finish trying to see all the properties and values in VBA
+    # Example usage
+    run_word_macro(
+        doc_path=FILES[0],
+        macro_name="ogmaMacro",
+        wordVisible=True,
+    )
