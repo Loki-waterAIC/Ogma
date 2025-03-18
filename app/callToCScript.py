@@ -17,7 +17,7 @@ def update_doc_properties(doc_path:str) -> None:
     '''
     
     # set the macro
-    macro:str = r"UpdateAllFields"
+    macro:str = r"ogma"
     visible = True
     
     

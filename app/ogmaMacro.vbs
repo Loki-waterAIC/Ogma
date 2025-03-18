@@ -1,7 +1,10 @@
 
-Sub UpdateAllFields()
+Sub ogmaMacro()
     Dim doc As Document
     Set doc = ActiveDocument
+
+    Application.ScreenUpdating = False
+    Application.Options.UpdateFieldsAtPrint = False
 
     With ActiveDocument
 
@@ -22,6 +25,19 @@ Sub UpdateAllFields()
             Next oFooter
         Next oSection
     End With
+
+    UpdateTitlePageFields
+    
+    ActiveDocument.Repaginate
+
+    Dim TOC As TableOfContents
+    For Each TOC In ActiveDocument.TablesOfContents
+        TOC.Update
+    Next
+
+
+    Application.ScreenUpdating = True
+    Application.Options.UpdateFieldsAtPrint = True
 End Sub
 
 
