@@ -11,7 +11,6 @@
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
-import copy
 from datetime import datetime
 
 
@@ -78,12 +77,30 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
     # set the values
     try:
         callToCScript.update_doc_properties(doc_path=doc_path)
+    except AttributeError as e:
+        print(e)
+        raise e
     except cscriptError as e:
         raise cscriptError(f"CScript Error occured:\n{e}")
     except Exception as e:
         raise Exception(f"Generic Error occured:\n{e}")
     return
 
+def get_word_properties() -> dict[str,str]:
+    return {
+            "BOK ID": '',
+            "Document Name": '',
+            "Company Name": '',
+            "Division": '',
+            "Author": '',
+            "Company Address": '',
+            "Project Name": '',
+            "Project Number": '',
+            "End Customer": '',
+            "Site Name": '',
+            "File Name": '',
+        }
+    
 
 def modify_word_properties(
     file_paths: list[str] | str, properties: dict[str, str] | None = None
@@ -94,56 +111,26 @@ def modify_word_properties(
         file_paths = [file_paths]
 
     time:str = get_current_datetime_str()
-    print(time)
         
     if properties == None:        
         properties = {
-            "BOK ID": f"302.EDC {time}",
-            "Document Name": f"Maciavelli {time}",
-            "Company Name": f"AIC {time}",
-            "Division": f"Automation Engineering {time}",
-            "Author": f"Aaron Shackelford {time}",
-            "Company Address": f"9332 Tech Center Dr Sacramento Ca | Suite 200 {time}",
-            "Project Name": f"Rocks and Socks {time}",
-            "Project Number": f"57.9092 {time}",
-            "End Customer": f"W M Lyles {time}",
-            "Site Name": f"Sacramento City {time}",
-            "File Name": f"Ventura {time}",
+            "BOK ID": f"BOK ID {time}",
+            "Document Name": f"DOC NAME {time}",
+            "Company Name": f"CO NAME {time}",
+            "Division": f"DIV {time}",
+            "Author": f"AUTH {time}",
+            "Company Address": f"ADDR {time}",
+            "Project Name": f"PRJ NAME {time}",
+            "Project Number": f"PRJ ID {time}",
+            "End Customer": f"END CUST {time}",
+            "Site Name": f"SITE NAME {time}",
+            "File Name": f"FILE NAME {time}",
         }
-        
-        # word:str = "dragon"
-        
-        # properties = {
-        #     "BOK ID": copy.deepcopy(word),
-        #     "Document Name": copy.deepcopy(word),
-        #     "Company Name": copy.deepcopy(word),
-        #     "Division": copy.deepcopy(word),
-        #     "Author": copy.deepcopy(word),
-        #     "Company Address": copy.deepcopy(word),
-        #     "Project Name": copy.deepcopy(word),
-        #     "Project Number": copy.deepcopy(word),
-        #     "End Customer": copy.deepcopy(word),
-        #     "Site Name": copy.deepcopy(word),
-        #     "File Name": copy.deepcopy(word),
-        # }
-
-    file_paths.sort()
-    lprint: str = "".join([str(i) + "\n" for i in file_paths])
     
-
-    print(f"Running files:\n{lprint}")
-    
-    if True:
-
-        with ThreadPoolExecutor() as e:
+    with ThreadPoolExecutor() as e:
         # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
             # Set the custom properties
             e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
-    else:
-        for path in file_paths:
-            set_custom_properties(doc_path=path, properties=properties)
-
-    print("Finished")
     return
 
 
