@@ -72,7 +72,12 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
         }
     """
     # update the values
-    __helper_update_properties(doc_path=doc_path, properties=properties)
+    try:
+        __helper_update_properties(doc_path=doc_path, properties=properties)
+    except Exception as e:
+        err_message = f"Error: can't open ({doc_path})"
+        print(err_message)
+        raise Exception(err_message)
 
     # set the values
     try:
