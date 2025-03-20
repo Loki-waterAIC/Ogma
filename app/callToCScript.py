@@ -9,7 +9,8 @@ from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 
 # project path
-OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+OGMA_PATH: str = os.path.abspath(path=os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
@@ -108,7 +109,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     # TODO:
     # check to make sure the number of macros is more or equal to than the number of docs
     if len(macro_paths) < len(doc_paths):
-        raise ValueError(f"You dun fucked up AARON!\nFiles are the wrong sizes:\n\t Macros >>> {len(macro_paths)} | Docs >>> {len(doc_paths)}")
+        raise ValueError("You dun fucked up AARON!\n" "Files are the wrong sizes:\n\t" f"Macros >>> {len(macro_paths)} | Docs >>> {len(doc_paths)}")
 
     to_process = list(zip(doc_paths, macro_paths))
     with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
