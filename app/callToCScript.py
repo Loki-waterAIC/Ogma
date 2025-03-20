@@ -80,7 +80,10 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
 def template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
     dir_path: str = os.path.join(abs_path, "app")
+    dir_path: str = os.path.join(dir_path, "documentTemplateMacros")
     dir_path: str = os.path.join(dir_path, "ogma.dotm")
+    if not os.path.exists(path=dir_path):
+        raise OSError(f"Template Path Does not Exist!\n\t>>> {dir_path}")
     return dir_path
 
 
