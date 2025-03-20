@@ -22,16 +22,18 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-from data.hidden.files import FILES  # This can be removed
 
-
-def run_word_macro(doc_path: str, macro_name: str, wordVisible: bool) -> None:
+def run_word_macro(
+    doc_path: str, macro_name: str, template_path: str, wordVisible: bool = False
+) -> None:
     """
     Runs a specified macro in a Word document.
 
     Args:
         doc_path (str): Full path to the Word document (.docm recommended).
+        template_path (str): path of the normal.dotm file to use.
         macro_name (str): Name of the macro to run.
+        wordVisible (bool): display word or not. Default is False
 
     Raises:
         Exception: If an error occurs during execution.
@@ -52,7 +54,7 @@ def run_word_macro(doc_path: str, macro_name: str, wordVisible: bool) -> None:
         # Save/close the document if it was opened
         if doc:
             doc.Save()
-            doc.Close()
+            doc.Close(SaveChanges=True)
             doc = None  # prevent duplication
 
         # Quit the Word application if it was started
@@ -66,12 +68,28 @@ def run_word_macro(doc_path: str, macro_name: str, wordVisible: bool) -> None:
         word = win32com.client.Dispatch(dispatch="Word.Application")
         word.Visible = wordVisible
 
+        # add macro
+        # TODO:
+        # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
+        # make duplicate macro files?????
+        #   have a target file to copy from.
+        #   count how many files, see if there is that many copies, make more if nessessary.
+        #   don't delete for funzies/"optimization"
+        # or maybe one word instance and thread the word docs.....
+        word.AddIns.Add(FileName=template_path, Install=False)
+        # word.AddIns(template_path).Installed = False
+
         # open the word document
         doc = word.Documents.Open(doc_path)
+
+        # insert the template
+        # doc.AttachedTemplate = template_path
 
         # run the macro
         # doc.Run(macro_name)
         word.Application.Run(macro_name)
+
+        word.AddIns.Unload(RemoveFromList=True)
 
     except AttributeError as e:
         # 3
@@ -100,9 +118,12 @@ def run_word_macro(doc_path: str, macro_name: str, wordVisible: bool) -> None:
 
 
 if __name__ == "__main__":
+    from data.hidden.files import FILES  # This can be removed
+
     # Example usage
     run_word_macro(
         doc_path=FILES[0],
         macro_name="ogmaMacro",
+        template_path=r".\app\ogma.dotm",
         wordVisible=True,
     )
