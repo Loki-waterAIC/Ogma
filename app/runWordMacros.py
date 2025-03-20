@@ -73,20 +73,20 @@ def run_word_macro(doc_path: str, macro_name: str, template_path: str, wordVisib
         #   have a target file to copy from.
         #   count how many files, see if there is that many copies, make more if nessessary.
         #   don't delete for funzies/"optimization"
-        word.AddIns.Add(FileName=template_path, Install=False)
-        # word.AddIns(template_path).Installed = False
+        # word.AddIns.Add(FileName=template_path, Install=True)
 
         # open the word document
         doc = word.Documents.Open(doc_path)
 
         # insert the template
-        # doc.AttachedTemplate = template_path
+        doc.AttachedTemplate = template_path
 
         # run the macro
         # doc.Run(macro_name)
         word.Application.Run(macro_name)
 
-        word.AddIns.Unload(RemoveFromList=True)
+        # word.AddIns.Unload(RemoveFromList=True)
+        doc.AttachedTemplate = ""
 
     except AttributeError as e:
         # 3

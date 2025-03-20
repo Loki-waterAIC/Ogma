@@ -85,7 +85,7 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
 
     with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
         # for each macro needed, in a new thread make a copy of the macro
-        paths: Iterator[str] = e.map(lambda x: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj, throw=x), [i for i in range(num_to_multiply_to + 1)])
+        paths: Iterator[str] = e.map(lambda x: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj, throw=x), ([None]*num_to_multiply_to))
     return list(paths)
 
 
@@ -113,12 +113,11 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     # set the macro
     macro: str = r"ogmaMacro"
     template_path: str = template_path_func()
-    visible = True
+    visible = False
 
     macro_paths: list[str] = multiply_macros(macro_path=template_path, num_to_multiply_to=len(doc_paths))
 
-    # TODO:
-    # check to make sure the number of macros is more or equal to than the number of docs
+    # make sure there are enough macros
     if len(macro_paths) < len(doc_paths):
         raise ValueError("You dun fucked up AARON!\n" "Files are the wrong sizes:\n\t" f"Macros >>> {len(macro_paths)} | Docs >>> {len(doc_paths)}")
 
@@ -129,6 +128,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
             to_process,
         )
 
+    # cleanup
     # delete cloned macros
     removeMacros.delete_async(paths=macro_paths)
     return
