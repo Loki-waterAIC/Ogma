@@ -9,6 +9,13 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 
+def template_path_func() -> str:
+    abs_path: str = os.path.abspath(".")
+    dir_path: str = os.path.join(abs_path, "app")
+    dir_path: str = os.path.join(dir_path, "ogma.dotm")
+    return dir_path
+
+
 def update_doc_properties(doc_path: str) -> None:
     """
     update_doc_properties runs the "UpdateDocumentProperties" macro in the word file at the given path
@@ -22,7 +29,7 @@ def update_doc_properties(doc_path: str) -> None:
 
     # set the macro
     macro: str = r"ogmaMacro"
-    template_path=r".\app\ogma.dotm"
+    template_path:str = template_path_func()
     visible = True
 
     RunWordMacro.run_word_macro(
