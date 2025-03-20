@@ -48,21 +48,31 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
         already_copied (list[str]): list of already copied macros
     """
 
-    def sub_thread_make_copies(macro_bin: io.BytesIO, inner_path_obj: dict[str, str]) -> str:
+    def sub_thread_make_copies(macro_bin: io.BytesIO, inner_path_obj: dict[str, str], throw) -> str:
+        # throw exists so that the thread pool map will actually run the function
+        
+        # copy original into a separate section of memory.
         inner_parent = io.BytesIO()
         with BIN_COPY_LOCK:
+            macro_bin.seek(0)
             inner_parent: io.BytesIO = copy.deepcopy(macro_bin)
+        
+        # make the random new name for temp macro copy
         inner_name: str = inner_path_obj["name"]
         inner_ext: str = inner_path_obj["ext"]
         inner_dir: str = inner_path_obj["dir"]
-        new_name: str = f"{inner_name}{generate_random_string(length=5)}{inner_ext}"
+        new_name: str = f"{inner_name}({generate_random_string(length=5)}){inner_ext}"
         macro_copy_path: str = os.path.normpath(os.path.join(inner_dir, new_name))
+        
+        # write temp macro file
         with open(file=macro_copy_path, mode="wb") as child:
             inner_parent.seek(0)
             child.write(inner_parent.read())
+        
+        # return the path of the temporary macro created.
         return macro_copy_path
 
-    # Split the file path into directory, base name, and extension
+    # Split the macro file path into directory, base name, and extension
     directory, base_name = os.path.split(macro_path)
     name, ext = os.path.splitext(base_name)
     parent_path_obj: dict[str, str] = {"name": name, "ext": ext, "dir": directory}
@@ -74,7 +84,8 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
         macro_bin = io.BytesIO(initial_bytes=parent.read())
 
     with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-        paths: Iterator[str] = e.map(lambda: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj), [i for i in range(num_to_multiply_to + 1)])
+        # for each macro needed, in a new thread make a copy of the macro
+        paths: Iterator[str] = e.map(lambda x: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj, throw=x), [i for i in range(num_to_multiply_to + 1)])
     return list(paths)
 
 
