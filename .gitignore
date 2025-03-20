@@ -176,3 +176,9 @@ cython_debug/
 # loki gitignore
 data/hidden/*
 .vs/*
+
+#ogma copies
+# posix
+*/ogma(\s?)([a-zA-Z0-9]*).dotm
+# nt
+*\ogma(\s?)([a-zA-Z0-9]*).dotm
