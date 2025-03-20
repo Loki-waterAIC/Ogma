@@ -75,7 +75,6 @@ def run_word_macro(
         #   have a target file to copy from.
         #   count how many files, see if there is that many copies, make more if nessessary.
         #   don't delete for funzies/"optimization"
-        # or maybe one word instance and thread the word docs.....
         word.AddIns.Add(FileName=template_path, Install=False)
         # word.AddIns(template_path).Installed = False
 
