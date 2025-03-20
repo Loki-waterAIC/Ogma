@@ -1,7 +1,7 @@
 import os
 import sys
 
-import RunWordMacro
+import runWordMacro
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -12,6 +12,7 @@ if OGMA_PATH not in sys.path:
 def template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
     dir_path: str = os.path.join(abs_path, "app")
+    dir_path: str = os.path.join(dir_path, "documentTemplateMacros")
     dir_path: str = os.path.join(dir_path, "ogma.dotm")
     return dir_path
 
@@ -32,7 +33,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     template_path:str = template_path_func()
     visible = True
 
-    RunWordMacro.run_word_macro_on_files(
+    runWordMacro.run_word_macro_on_files(
         doc_paths=doc_paths,
         macro_name=macro,
         template_path=template_path,
