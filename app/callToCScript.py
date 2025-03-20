@@ -72,9 +72,8 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
         parent.seek(0)
         macro_bin = io.BytesIO(initial_bytes=parent.read())
 
-    with ThreadPoolExecutor() as e:
+    with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
         paths: Iterator[str] = e.map(lambda: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj), [i for i in range(num_to_multiply_to + 1)])
-
     return list(paths)
 
 
@@ -101,15 +100,15 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     template_path: str = template_path_func()
     visible = True
 
-    # TODO:
-    # check if the number of macros is less than the number of docs
     macro_paths: list[str] = multiply_macros(macro_path=template_path, num_to_multiply_to=len(doc_paths))
 
-    if len(macro_paths) == len(doc_paths):
+    # TODO:
+    # check to make sure the number of macros is more or equal to than the number of docs
+    if len(macro_paths) < len(doc_paths):
         raise ValueError(f"You dun fucked up AARON!\nFiles are the wrong sizes:\n\t Macros >>> {len(macro_paths)} | Docs >>> {len(doc_paths)}")
 
     to_process = list(zip(doc_paths, macro_paths))
-    with ThreadPoolExecutor() as e:
+    with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
         e.map(
             lambda x: runWordMacros.run_word_macro(doc_path=x[0], macro_name=macro, template_path=x[1], wordVisible=visible),
             to_process,

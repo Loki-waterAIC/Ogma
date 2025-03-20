@@ -61,7 +61,7 @@ def delete_async(paths: str | Path | list[str] | list[Path] | list[str | Path]) 
         multiprocessing.Process: The process that will attempt to delete the file.
     """
     if isinstance(paths, list):
-        with ThreadPoolExecutor() as e:
+        with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
             pids: Iterator[multiprocessing.Process] = e.map(_start_deletion_process, paths)
         return list(pids)
     else:
