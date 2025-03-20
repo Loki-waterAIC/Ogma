@@ -18,5 +18,5 @@ for child in root:
     print(child.tag, child.attrib)
 
 # Find specific elements using XPath
-for elem in root.xpath('//tag_name'):
+for elem in root.xpath("//tag_name"):
     print(elem.text)

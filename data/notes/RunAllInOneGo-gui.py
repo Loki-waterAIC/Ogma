@@ -3,9 +3,9 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 
-from ogma import modify_word_properties as run_scripts  # Edit the <>'s
+from app.ogma import modify_word_properties as run_scripts  # Edit the <>'s
 
-FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"),("All files", "*;")]
+FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*;")]
 TITLE_NAME = "File Processor"
 
 
@@ -17,16 +17,13 @@ def run_scripts_gui(file_paths: list[str]) -> None:
         message=f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
     )
 
-
     # If the user confirms, run the scripts
     if confirmation:
         # messagebox.showinfo(
         #     "Running Scripts", f"Running scripts for files: {file_paths}"
         # )
         run_scripts(file_paths=file_paths)
-        messagebox.showinfo(
-            "Finished", f"Finished running scripts for files: {file_paths}"
-        )
+        messagebox.showinfo("Finished", f"Finished running scripts for files: {file_paths}")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
 
@@ -43,33 +40,21 @@ class GUIApp:
         self.checkboxes = []
 
         # Top buttons
-        self.select_button = tk.Button(
-            root, text="Select files", command=self.select_files
-        )
+        self.select_button = tk.Button(root, text="Select files", command=self.select_files)
         self.select_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
 
-        self.toggle_all_button = tk.Button(
-            root, text="Toggle all", command=self.toggle_all
-        )
+        self.toggle_all_button = tk.Button(root, text="Toggle all", command=self.toggle_all)
         self.toggle_all_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
         # Text box with scrollbars
         self.text_box_frame = tk.Frame(root)
-        self.text_box_frame.grid(
-            row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew"
-        )
+        self.text_box_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
         # Canvas and scrollbars
         self.canvas = tk.Canvas(self.text_box_frame, bg="white")
-        self.h_scrollbar = ttk.Scrollbar(
-            self.text_box_frame, orient="horizontal", command=self.canvas.xview
-        )
-        self.v_scrollbar = ttk.Scrollbar(
-            self.text_box_frame, orient="vertical", command=self.canvas.yview
-        )
-        self.scrollable_frame = tk.Frame(
-            self.canvas, bg="white"
-        )  # Set background to white
+        self.h_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="horizontal", command=self.canvas.xview)
+        self.v_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = tk.Frame(self.canvas, bg="white")  # Set background to white
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -77,9 +62,7 @@ class GUIApp:
         )
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(
-            xscrollcommand=self.h_scrollbar.set, yscrollcommand=self.v_scrollbar.set
-        )
+        self.canvas.configure(xscrollcommand=self.h_scrollbar.set, yscrollcommand=self.v_scrollbar.set)
 
         # Pack scrollbars and canvas
         self.h_scrollbar.pack(side="bottom", fill="x")
@@ -87,24 +70,12 @@ class GUIApp:
         self.canvas.pack(side="left", fill="both", expand=True)
 
         # Bind mouse wheel events to the canvas for both horizontal and vertical scrolling
-        self.canvas.bind_all(
-            "<MouseWheel>", self.on_mouse_wheel
-        )  # Vertical scrolling (Windows/macOS)
-        self.canvas.bind_all(
-            "<Shift-MouseWheel>", self.on_horizontal_mouse_wheel
-        )  # Horizontal scrolling (Windows/macOS)
-        self.canvas.bind_all(
-            "<Button-4>", self.on_mouse_wheel
-        )  # Vertical scrolling (Linux, up)
-        self.canvas.bind_all(
-            "<Button-5>", self.on_mouse_wheel
-        )  # Vertical scrolling (Linux, down)
-        self.canvas.bind_all(
-            "<Shift-Button-4>", self.on_horizontal_mouse_wheel
-        )  # Horizontal scrolling (Linux, left)
-        self.canvas.bind_all(
-            "<Shift-Button-5>", self.on_horizontal_mouse_wheel
-        )  # Horizontal scrolling (Linux, right)
+        self.canvas.bind_all("<MouseWheel>", self.on_mouse_wheel)  # Vertical scrolling (Windows/macOS)
+        self.canvas.bind_all("<Shift-MouseWheel>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Windows/macOS)
+        self.canvas.bind_all("<Button-4>", self.on_mouse_wheel)  # Vertical scrolling (Linux, up)
+        self.canvas.bind_all("<Button-5>", self.on_mouse_wheel)  # Vertical scrolling (Linux, down)
+        self.canvas.bind_all("<Shift-Button-4>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, left)
+        self.canvas.bind_all("<Shift-Button-5>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, right)
 
         # Bottom buttons
         self.remove_button = tk.Button(root, text="Remove", command=self.remove_files)
@@ -121,9 +92,7 @@ class GUIApp:
     def select_files(self):
         # Open file dialog to select .insv files
         filetypes = FILE_TYPES
-        selected_files = filedialog.askopenfilenames(
-            title="Select files", filetypes=filetypes
-        )
+        selected_files = filedialog.askopenfilenames(title="Select files", filetypes=filetypes)
 
         # Add selected files to the list and update the text box
         for file_path in selected_files:
@@ -134,12 +103,8 @@ class GUIApp:
     def add_file_to_text_box(self, file_path):
         # Create a checkbox and label for the file path
         var = tk.BooleanVar(value=True)
-        checkbox = tk.Checkbutton(
-            self.scrollable_frame, variable=var, bg="white"
-        )  # Set background to white
-        label = tk.Label(
-            self.scrollable_frame, text=file_path, anchor="w", bg="white"
-        )  # Set background to white
+        checkbox = tk.Checkbutton(self.scrollable_frame, variable=var, bg="white")  # Set background to white
+        label = tk.Label(self.scrollable_frame, text=file_path, anchor="w", bg="white")  # Set background to white
 
         # Store the checkbox and its variable
         self.checkboxes.append((var, checkbox, label))
@@ -183,17 +148,11 @@ class GUIApp:
 
     def run_all(self):
         # Get the selected file paths and pass them to the run_scripts_gui function
-        selected_files = [
-            self.file_paths[i]
-            for i, (var, _, _) in enumerate(self.checkboxes)
-            if var.get()
-        ]
+        selected_files = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(selected_files)
         else:
-            messagebox.showwarning(
-                "No Files Selected", "Please select at least one file to run."
-            )
+            messagebox.showwarning("No Files Selected", "Please select at least one file to run.")
 
     def on_mouse_wheel(self, event):
         # Handle vertical scrolling

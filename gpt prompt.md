@@ -1,5 +1,4 @@
-
-# Edit or rewrite this code.
+# Edit or rewrite this code
 
 The following is a vba macro for a word document that contains the following custom properties:
 "BOK ID"
@@ -56,9 +55,9 @@ Private Sub UpdatePropertiesButton_Click()
             Next oFooter
         Next oSection
     End With
-    
+
     UpdateTitlePageFields
-    
+
     ActiveDocument.Repaginate
 
     Dim TOC As TableOfContents
@@ -106,7 +105,7 @@ End Sub
 
 Private Sub UserForm_Initialize()
     On Error GoTo ErrorHandler
-    
+
     Caption = "Update Document Properties"
     txtBOKID.Value = ActiveDocument.CustomDocumentProperties("BOK ID").Value
     txtDocumentName.Value = ActiveDocument.CustomDocumentProperties("Document Name").Value

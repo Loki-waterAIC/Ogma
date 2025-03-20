@@ -8,7 +8,8 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-def unzip_file_multithreaded(zip_file_path: str, file_ext: list[str] = [".zip"], output_dir:str|None = None) -> str:
+
+def unzip_file_multithreaded(zip_file_path: str, file_ext: list[str] = [".zip"], output_dir: str | None = None) -> str:
     """
     Unzips a ZIP file to the same directory in a multi-threaded fashion.
 
@@ -32,17 +33,17 @@ def unzip_file_multithreaded(zip_file_path: str, file_ext: list[str] = [".zip"],
             period = None
         # init
         output_dir = os.path.abspath(zip_file_path[:period])
-        
+
         # remove ending
         for i in file_ext:
             if zip_file_path.endswith(i):
                 output_dir = os.path.abspath(zip_file_path).removesuffix(i)
                 break
-            
+
     # make the dir
     os.makedirs(name=output_dir, exist_ok=True)
 
-    with zipfile.ZipFile(file=zip_file_path, mode='r') as zip_ref:
+    with zipfile.ZipFile(file=zip_file_path, mode="r") as zip_ref:
         zip_objects: list[zipfile.ZipInfo] = zip_ref.infolist()
         tree: list[str] = zip_ref.namelist()
         tree.sort()
@@ -62,14 +63,15 @@ def unzip_file_multithreaded(zip_file_path: str, file_ext: list[str] = [".zip"],
 
         with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as executor:
             executor.map(extract_member, zip_objects)
-            
+
     return output_dir
+
 
 if __name__ == "__main__":
     from data.hidden import files
-    
+
     # Example usage
-    extns: list[str] = ['.docx', '.docm']
+    extns: list[str] = [".docx", ".docm"]
     proc: list[str] = []
     excl: list[str] = []
     if False:
@@ -92,4 +94,4 @@ if __name__ == "__main__":
         for i in excl:
             print(i)
     else:
-        unzip_file_multithreaded(zip_file_path=files.FILES[0],file_ext=extns)
+        unzip_file_multithreaded(zip_file_path=files.FILES[0], file_ext=extns)

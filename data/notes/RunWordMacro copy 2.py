@@ -22,7 +22,8 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-def run_word_macro(doc_path: str, macro_name: str, template_path:str, wordVisible: bool = False) -> None:
+
+def run_word_macro(doc_path: str, macro_name: str, template_path: str, wordVisible: bool = False) -> None:
     """
     Runs a specified macro in a Word document.
 
@@ -54,7 +55,7 @@ def run_word_macro(doc_path: str, macro_name: str, template_path:str, wordVisibl
         #     doc.Save()
         #     doc.Close()
         #     doc = None  # prevent duplication
-            
+
         # # Close the normal template if it was opened
         # if normal_template:
         #     normal_template.Close()
@@ -75,10 +76,9 @@ def run_word_macro(doc_path: str, macro_name: str, template_path:str, wordVisibl
 
         # Open the normal template
         normal_template = word.Documents.Open(template_path)
-        
+
         # open the word document
         doc = word.Documents.Open(doc_path)
-        
 
         # run the macro
         # doc.Run(macro_name)
@@ -93,9 +93,7 @@ def run_word_macro(doc_path: str, macro_name: str, template_path:str, wordVisibl
         raise AttributeError(err_message)
     except Exception as e:
         # 3
-        err_message: str = (
-            f'GenericError Occured in "{doc_path}":\n\tGeneric Error:\n\t{e}'
-        )
+        err_message: str = f'GenericError Occured in "{doc_path}":\n\tGeneric Error:\n\t{e}'
         print(err_message)
         # 4
         sub_func_cleanup_0p9s8bgsp3()
@@ -112,7 +110,7 @@ def run_word_macro(doc_path: str, macro_name: str, template_path:str, wordVisibl
 
 if __name__ == "__main__":
     from data.hidden.files import FILES  # This can be removed
-    
+
     # Example usage
     run_word_macro(
         doc_path=FILES[0],

@@ -30,7 +30,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
 
     # set the macro
     macro: str = r"ogmaMacro"
-    template_path:str = template_path_func()
+    template_path: str = template_path_func()
     visible = True
 
     runWordMacro.run_word_macro_on_files(
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     from data.hidden.files import FILES  # This can be removed
 
     # Example usage
-    file: str | list[str] = FILES[0] # making it so it works both single and multiple file tests
+    file: str | list[str] = FILES[0]  # making it so it works both single and multiple file tests
     if isinstance(file, str):
         file = [file]
     update_doc_properties(doc_paths=file)

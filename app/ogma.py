@@ -33,11 +33,12 @@ def get_current_datetime_str() -> str:
     # for testing, can be deleted.
     # Get the current datetime
     now = datetime.now()
-    
+
     # Format the datetime string as YYYYMMDD-HH.MM[AM|PM]
     formatted_datetime = now.strftime("%Y%m%d-%I.%M%p")
-    
+
     return formatted_datetime
+
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
     try:
@@ -79,12 +80,11 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
     # update the values
     try:
         with ThreadPoolExecutor() as e:
-            e.map(lambda x : __helper_update_properties(doc_path=x, properties=properties), doc_paths)
+            e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), doc_paths)
     except Exception as e:
         err_message: str = f"Exception: {e}"
         print(err_message)
         raise Exception(err_message)
-    
 
     # set the values
     try:
@@ -98,33 +98,32 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
         raise Exception(f"Generic Error occured:\n{e}")
     return
 
-def get_word_properties() -> dict[str,str]:
-    return {
-            "BOK ID": '',
-            "Document Name": '',
-            "Company Name": '',
-            "Division": '',
-            "Author": '',
-            "Company Address": '',
-            "Project Name": '',
-            "Project Number": '',
-            "End Customer": '',
-            "Site Name": '',
-            "File Name": '',
-        }
-    
 
-def modify_word_properties(
-    file_paths: list[str] | str, properties: dict[str, str] | None = None
-) -> None:
+def get_word_properties() -> dict[str, str]:
+    return {
+        "BOK ID": "",
+        "Document Name": "",
+        "Company Name": "",
+        "Division": "",
+        "Author": "",
+        "Company Address": "",
+        "Project Name": "",
+        "Project Number": "",
+        "End Customer": "",
+        "Site Name": "",
+        "File Name": "",
+    }
+
+
+def modify_word_properties(file_paths: list[str] | str, properties: dict[str, str] | None = None) -> None:
     # Define the properties and their default values
 
     if isinstance(file_paths, str):
         file_paths = [file_paths]
 
-    time:str = get_current_datetime_str()
-        
-    if properties == None:        
+    time: str = get_current_datetime_str()
+
+    if properties == None:
         properties = {
             "BOK ID": f"BOK ID {time}",
             "Document Name": f"DOC NAME {time}",
@@ -138,7 +137,7 @@ def modify_word_properties(
             "Site Name": f"SITE NAME {time}",
             "File Name": f"FILE NAME {time}",
         }
-        
+
     set_custom_properties(doc_paths=file_paths, properties=properties)
 
     return
