@@ -3,32 +3,14 @@ import os
 import sys
 from concurrent.futures import Future, ThreadPoolExecutor
 from collections.abc import Iterator
-from pathlib import Path, PurePath
-
-import RunWordMacro
+from concurrent.futures import ThreadPoolExecutor
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-HASH_ALG = "sha256"
-
-
-def get_file_hash(file_path: str, hash_algorithm: str = HASH_ALG) -> str:
-    """
-    Computes the hash of a file using the specified hash algorithm.
-
-    Args:
-        file_path (str): The path to the file to be hashed.
-        hash_algorithm (str, optional): The hash algorithm to use (default is 'sha256').
-
-    Returns:
-        str: The hexadecimal hash of the file.
-    """
-    with open(file_path, "rb") as f:
-        hash_func: hashlib._Hash = hashlib.new(name=hash_algorithm, data=f.read(), usedforsecurity=False)
-        return hash_func.hexdigest()
+import runWordMacros
 
 
 def valid_copies(parent_path: str, children_copies: list[str], hash_algorithm: str = HASH_ALG) -> list[str]:
