@@ -1,7 +1,10 @@
-import hashlib
+import copy
+import io
 import os
+import secrets
+import string
 import sys
-from concurrent.futures import Future, ThreadPoolExecutor
+import threading
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 
@@ -10,69 +13,31 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
+import removeMacros
 import runWordMacros
 
+# lock for macro binary copy
+BIN_COPY_LOCK = threading.Lock()
 
-def valid_copies(parent_path: str, children_copies: list[str], hash_algorithm: str = HASH_ALG) -> list[str]:
+
+def generate_random_string(length: int) -> str:
     """
-    Compares the hashes of a parent to its children copies.
+    Generate a random string of alphanumeric characters.
 
     Args:
-        parent_path (str): The path to the first file.
-        children_copies (list[str]): The path to the second file.
-        hash_algorithm (str, optional): The hash algorithm to use (default is 'sha256').
+        length (int): The length of the random string to generate.
 
     Returns:
-        list[str]: list of the children that matched the parent plus the parent
+        str: A random string of alphanumeric characters of the specified length.
     """
-    good_paths: list[str] = [parent_path]
-    
-    if children_copies:
-        # process hash files
-        with ThreadPoolExecutor() as e:
-            parent_future: Future[str] = e.submit(lambda: get_file_hash(file_path=parent_path, hash_algorithm=hash_algorithm))
-            children_futures: Iterator[str] = e.map(
-                lambda x: get_file_hash(file_path=x, hash_algorithm=hash_algorithm),
-                children_copies,
-            )
-        parent_hash: str = parent_future.result()
-        children_hashes: list[str] = list(children_futures)
-        # add identical hashes to good_paths
-        children_data = list(zip(children_hashes, children_copies))
-        good_paths.extend([x[1] for x in children_data if x[0] == parent_hash])
-    return good_paths
+    # Define the characters to choose from (alphanumeric)
+    characters: str = string.ascii_letters + string.digits
+    # Generate a random string of the specified length (using secrets to avoid the chance of two threads producing the same result)
+    random_string: str = "".join([secrets.choice(characters) for i in range(length)])
+    return random_string
 
 
-def get_macro_paths(macro_path: str) -> list[str]:
-    """
-    get_macro_paths return the paths for the macro copies.
-
-    Args:
-        macro_path (str): parent macro path
-
-    Returns:
-        list[str]: macro copy paths + parent path
-    """
-    # Make sure all the macros are the same as the parent macro (hash comp)
-    # use increment file name function as a template
-    copies: list[str] = []
-
-    # Split the file path into directory, base name, and extension
-    directory, base_name = os.path.split(macro_path)
-    name, ext = os.path.splitext(base_name)
-
-    dir = Path(directory)
-
-    copies_path: list[PurePath] = list(dir.glob(f"{name} (/d){ext}"))
-
-    copies = [str(i) for i in copies_path]
-    # TODO: Make sure Copies is abs paths and only containts the correct files
-    pass
-
-    return valid_copies(parent_path=macro_path, children_copies=copies)
-
-
-def multiply_macros(macro_path: str, num_to_multiply_to: int, already_copied: list[str]) -> list[str]:
+def multiply_macros(macro_path: str, num_to_multiply_to: int) -> list[str]:
     """
     multiply_macros  mutilpies a parent macro
 
@@ -81,34 +46,36 @@ def multiply_macros(macro_path: str, num_to_multiply_to: int, already_copied: li
         num_to_multiply_to (int): number of copies to have
         already_copied (list[str]): list of already copied macros
     """
-    # raise Warning("Function not implemented yet")
-    # Make sure there are num_to_multiply_to number of macro copies avaible
-    # Make macro folder
-    # add "Macro (n).dotm" is added to .gitignore
 
-    # if macro copy in already_copied, skip
-    
+    def sub_thread_make_copies(macro_bin: io.BytesIO, inner_path_obj: dict[str, str]) -> str:
+        inner_parent = io.BytesIO()
+        with BIN_COPY_LOCK:
+            inner_parent: io.BytesIO = copy.deepcopy(macro_bin)
+        inner_name: str = inner_path_obj["name"]
+        inner_ext: str = inner_path_obj["ext"]
+        inner_dir: str = inner_path_obj["dir"]
+        new_name: str = f"{inner_name}{generate_random_string(length=5)}{inner_ext}"
+        macro_copy_path: str = os.path.normpath(os.path.join(inner_dir, new_name))
+        with open(file=macro_copy_path, mode="wb") as child:
+            inner_parent.seek(0)
+            child.write(inner_parent.read())
+        return macro_copy_path
+
     # Split the file path into directory, base name, and extension
     directory, base_name = os.path.split(macro_path)
     name, ext = os.path.splitext(base_name)
+    parent_path_obj: dict[str, str] = {"name": name, "ext": ext, "dir": directory}
 
+    # load macro binary into memory
+    macro_bin = io.BytesIO()
+    with open(file=macro_path, mode="rb") as parent:
+        parent.seek(0)
+        macro_bin = io.BytesIO(initial_bytes=parent.read())
 
-    # Generate new file name with increment
-    with open(file=macro_path,mode='rb') as parent:
-        template: str = "({counter})"
-        for counter in range(num_to_multiply_to+1):
-            increment: str = template.replace("{counter}", str(counter))
-            new_name: str = f"{name}{increment}{ext}"
-            macro_copy_path: str = os.path.normpath(os.path.join(directory, new_name))
-            
-            if macro_copy_path in already_copied:
-                continue
-                
-            with open(file=macro_copy_path, mode="wb") as child:
-                parent.seek(0)
-                child.write(parent.read())
-        
-    return already_copied
+    with ThreadPoolExecutor() as e:
+        paths: Iterator[str] = e.map(lambda: sub_thread_make_copies(macro_bin=macro_bin, inner_path_obj=parent_path_obj), [i for i in range(num_to_multiply_to + 1)])
+
+    return list(paths)
 
 
 def template_path_func() -> str:
@@ -136,13 +103,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
 
     # TODO:
     # check if the number of macros is less than the number of docs
-    macro_paths: list[str] = get_macro_paths(macro_path=template_path)
-    if len(macro_paths) < len(doc_paths):
-        macro_paths = multiply_macros(
-            macro_path=template_path,
-            num_to_multiply_to=len(doc_paths),
-            already_copied=macro_paths,
-        )
+    macro_paths: list[str] = multiply_macros(macro_path=template_path, num_to_multiply_to=len(doc_paths))
 
     if len(macro_paths) == len(doc_paths):
         raise ValueError(f"You dun fucked up AARON!\nFiles are the wrong sizes:\n\t Macros >>> {len(macro_paths)} | Docs >>> {len(doc_paths)}")
@@ -150,14 +111,12 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     to_process = list(zip(doc_paths, macro_paths))
     with ThreadPoolExecutor() as e:
         e.map(
-            lambda x: RunWordMacro.run_word_macro(
-                doc_path=x[0],
-                macro_name=macro,
-                template_path=x[1],
-                wordVisible=visible,
-            ),
+            lambda x: runWordMacros.run_word_macro(doc_path=x[0], macro_name=macro, template_path=x[1], wordVisible=visible),
             to_process,
         )
+
+    # delete cloned macros
+    removeMacros.delete_async(paths=macro_paths)
     return
 
 
