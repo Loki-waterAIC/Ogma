@@ -16,7 +16,7 @@ def template_path_func() -> str:
     return dir_path
 
 
-def update_doc_properties(doc_path: str) -> None:
+def update_doc_properties(doc_paths: list[str]) -> None:
     """
     update_doc_properties runs the "UpdateDocumentProperties" macro in the word file at the given path
 
@@ -32,8 +32,8 @@ def update_doc_properties(doc_path: str) -> None:
     template_path:str = template_path_func()
     visible = True
 
-    RunWordMacro.run_word_macro(
-        doc_path=doc_path,
+    RunWordMacro.run_word_macro_on_files(
+        doc_paths=doc_paths,
         macro_name=macro,
         template_path=template_path,
         wordVisible=visible,
@@ -46,4 +46,7 @@ if __name__ == "__main__":
     from data.hidden.files import FILES  # This can be removed
 
     # Example usage
-    update_doc_properties(doc_path=FILES[0])
+    file: str | list[str] = FILES[0] # making it so it works both single and multiple file tests
+    if isinstance(file, str):
+        file = [file]
+    update_doc_properties(doc_paths=file)

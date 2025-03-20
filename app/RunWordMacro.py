@@ -23,15 +23,15 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 
-def run_word_macro(
-    doc_path: str, macro_name: str, template_path: str, wordVisible: bool = False
+def run_word_macro_on_files(
+    doc_paths: list[str], macro_name: str, template_path: str | None, wordVisible: bool = False
 ) -> None:
     """
     Runs a specified macro in a Word document.
 
     Args:
         doc_path (str): Full path to the Word document (.docm recommended).
-        template_path (str): path of the normal.dotm file to use.
+        template_path (str|None): path of the normal.dotm file to use. If None, it will assume the Template is in Normal.dotm or in the Docm file.
         macro_name (str): Name of the macro to run.
         wordVisible (bool): display word or not. Default is False
 
@@ -53,14 +53,18 @@ def run_word_macro(
 
         # Save/close the document if it was opened
         if doc:
-            doc.Save()
-            doc.Close(SaveChanges=True)
+            try:
+                doc.Save()
+                doc.Close(SaveChanges=True)
+            except:
+                # if can't save, assume it is closed
+                pass
             doc = None  # prevent duplication
 
         # Quit the Word application if it was started
         if word:
             word.Quit()
-            word = None  # prevent duplication
+            word = None
 
     try:
         # 2
@@ -71,29 +75,29 @@ def run_word_macro(
         # add macro
         # TODO:
         # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
-        # make duplicate macro files?????
-        #   have a target file to copy from.
-        #   count how many files, see if there is that many copies, make more if nessessary.
-        #   don't delete for funzies/"optimization"
         # or maybe one word instance and thread the word docs.....
-        word.AddIns.Add(FileName=template_path, Install=False)
-        # word.AddIns(template_path).Installed = False
+        if template_path:
+            word.AddIns.Add(FileName=template_path, Install=False)
+            # word.AddIns(template_path).Installed = False
 
-        # open the word document
-        doc = word.Documents.Open(doc_path)
+        # open all files one at a time?
+        for path in doc_paths:
+            # open the word document
+            doc = word.Documents.Open(path)
 
-        # insert the template
-        # doc.AttachedTemplate = template_path
+            # insert the template
+            # doc.AttachedTemplate = template_path
 
-        # run the macro
-        # doc.Run(macro_name)
-        word.Application.Run(macro_name)
+            # run the macro
+            # doc.Run(macro_name)
+            word.Application.Run(macro_name)
 
-        word.AddIns.Unload(RemoveFromList=True)
+        if template_path:
+            word.AddIns.Unload(RemoveFromList=True)
 
     except AttributeError as e:
         # 3
-        err_message = f'AttributeError Occured in "{doc_path}":\n\tCouldn\'t run Macro "{macro_name}"\n\tError: >>> {e}'
+        err_message = f'AttributeError Occured in "{doc_paths}":\n\tCouldn\'t run Macro "{macro_name}"\n\tError: >>> {e}'
         print(err_message)
         # 4
         sub_func_cleanup_0p9s8bgsp3()
@@ -101,7 +105,7 @@ def run_word_macro(
     except Exception as e:
         # 3
         err_message: str = (
-            f'GenericError Occured in "{doc_path}":\n\tGeneric Error:\n\t{e}'
+            f'GenericError Occured in "{doc_paths}":\n\tGeneric Error:\n\t{e}'
         )
         print(err_message)
         # 4
@@ -118,12 +122,16 @@ def run_word_macro(
 
 
 if __name__ == "__main__":
-    from data.hidden.files import FILES  # This can be removed
+    from data.hidden.files import FILES, MACRO_FILES  # This can be removed
 
     # Example usage
-    run_word_macro(
-        doc_path=FILES[0],
+    file: str | list[str] = FILES[0] # making it so it works both single and multiple file tests
+    if isinstance(file, str):
+        file = [file]
+    
+    run_word_macro_on_files(
+        doc_paths=file,
+        template_path=MACRO_FILES[0],
         macro_name="ogmaMacro",
-        template_path=r".\app\ogma.dotm",
         wordVisible=True,
     )

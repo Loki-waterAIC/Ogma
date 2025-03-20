@@ -40,7 +40,12 @@ def get_current_datetime_str() -> str:
     return formatted_datetime
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
-    document: docx.document.Document = docx.Document(docx=doc_path)
+    try:
+        document: docx.document.Document = docx.Document(docx=doc_path)
+    except Exception as e:
+        err_message: str = f"Exception: can't open ({doc_path})\n\tError >>> {e}"
+        print(err_message)
+        raise Exception(err_message)
 
     for k in properties:
         document.custom_properties[k] = properties[k]
@@ -48,7 +53,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
     document.save(path_or_stream=doc_path)
 
 
-def set_custom_properties(doc_path: str, properties: dict) -> None:
+def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
     """
     Set custom document properties in a Word document.
 
@@ -73,15 +78,17 @@ def set_custom_properties(doc_path: str, properties: dict) -> None:
     """
     # update the values
     try:
-        __helper_update_properties(doc_path=doc_path, properties=properties)
+        with ThreadPoolExecutor() as e:
+            e.map(lambda x : __helper_update_properties(doc_path=x, properties=properties), doc_paths)
     except Exception as e:
-        err_message = f"Error: can't open ({doc_path})"
+        err_message: str = f"Exception: {e}"
         print(err_message)
         raise Exception(err_message)
+    
 
     # set the values
     try:
-        callToCScript.update_doc_properties(doc_path=doc_path)
+        callToCScript.update_doc_properties(doc_paths=doc_paths)
     except AttributeError as e:
         print(e)
         raise e
@@ -131,13 +138,11 @@ def modify_word_properties(
             "Site Name": f"SITE NAME {time}",
             "File Name": f"FILE NAME {time}",
         }
-    
-    with ThreadPoolExecutor() as e:
-        # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-            # Set the custom properties
-            e.map(lambda x: set_custom_properties(doc_path=x, properties=properties),file_paths)
+        
+    set_custom_properties(doc_paths=file_paths, properties=properties)
+
     return
 
 
 if __name__ == "__main__":
-    modify_word_properties(FILES)
+    modify_word_properties(file_paths=FILES)
