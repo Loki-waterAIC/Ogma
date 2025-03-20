@@ -23,9 +23,7 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 
-def run_word_macro_on_files(
-    doc_paths: list[str], macro_name: str, template_path: str | None, wordVisible: bool = False
-) -> None:
+def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path: str | None, wordVisible: bool = False) -> None:
     """
     Runs a specified macro in a Word document.
 
@@ -77,10 +75,12 @@ def run_word_macro_on_files(
         # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
         # or maybe one word instance and thread the word docs.....
         if template_path:
-            word.AddIns.Add(FileName=template_path, Install=False)
+            word.AddIns.Add(FileName=template_path, Install=True)
             # word.AddIns(template_path).Installed = False
 
-        # open all files one at a time?
+        # [ ] open all files one at a time?
+        
+        # def _sub_thread_file_fspotbh3(path) -> None:
         for path in doc_paths:
             # open the word document
             doc = word.Documents.Open(path)
@@ -91,9 +91,17 @@ def run_word_macro_on_files(
             # run the macro
             # doc.Run(macro_name)
             word.Application.Run(macro_name)
+            
+            # Save/close the document if it was opened
+            if doc:
+                try:
+                    doc.Save()
+                    doc.Close(SaveChanges=True)
+                except:
+                    # if can't save, assume it is closed
+                    pass
+                doc = None  # prevent duplication
 
-        if template_path:
-            word.AddIns.Unload(RemoveFromList=True)
 
     except AttributeError as e:
         # 3
@@ -104,9 +112,7 @@ def run_word_macro_on_files(
         raise AttributeError(err_message)
     except Exception as e:
         # 3
-        err_message: str = (
-            f'GenericError Occured in "{doc_paths}":\n\tGeneric Error:\n\t{e}'
-        )
+        err_message: str = f'GenericError Occured in "{doc_paths}":\n\tGeneric Error:\n\t{e}'
         print(err_message)
         # 4
         sub_func_cleanup_0p9s8bgsp3()
@@ -125,10 +131,10 @@ if __name__ == "__main__":
     from data.hidden.files import FILES, MACRO_FILES  # This can be removed
 
     # Example usage
-    file: str | list[str] = FILES[0] # making it so it works both single and multiple file tests
+    file: str | list[str] = FILES[0]  # making it so it works both single and multiple file tests
     if isinstance(file, str):
         file = [file]
-    
+
     run_word_macro_on_files(
         doc_paths=file,
         template_path=MACRO_FILES[0],

@@ -14,6 +14,8 @@ def template_path_func() -> str:
     dir_path: str = os.path.join(abs_path, "app")
     dir_path: str = os.path.join(dir_path, "documentTemplateMacros")
     dir_path: str = os.path.join(dir_path, "ogma.dotm")
+    if not os.path.exists(path=dir_path):
+        raise OSError(f"Template Path Does not Exist!\n\t>>> {dir_path}")
     return dir_path
 
 

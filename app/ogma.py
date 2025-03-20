@@ -79,7 +79,7 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
     """
     # update the values
     try:
-        with ThreadPoolExecutor() as e:
+        with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
             e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), doc_paths)
     except Exception as e:
         err_message: str = f"Exception: {e}"
