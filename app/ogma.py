@@ -147,8 +147,12 @@ def modify_word_properties(file_paths: list[str] | str, properties: dict[str, st
 
     return
 
-
 if __name__ == "__main__":
+    
+    # TODO
+    # [ ] add an arugment for json data
+    # [ ] make it so the json data is turned into dict
+    
     from data.hidden.files import FILES
 
     modify_word_properties(file_paths=FILES)
