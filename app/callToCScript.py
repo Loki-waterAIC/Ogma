@@ -48,10 +48,7 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     update_doc_properties runs the "UpdateDocumentProperties" macro on the word files at the given path at the same time
 
     Args:
-        doc_path (str): _description_
-
-    Raises:
-        cscriptError: _description_
+        doc_paths (list[str]): files to process
     """
 
     # set the macro
@@ -69,10 +66,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     update_doc_properties runs the "UpdateDocumentProperties" macro on the word file at the given path
 
     Args:
-        doc_path (str): _description_
-
-    Raises:
-        cscriptError: _description_
+        doc_path (str): files to process
     """
 
     # set the macro
