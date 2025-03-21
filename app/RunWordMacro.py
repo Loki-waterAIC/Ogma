@@ -37,7 +37,6 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
         Exception: If an error occurs during execution.
     """
     # 1
-    doc: Any = None
     word: CDispatch | None = None
     # Initialize the COM library for threading
     pythoncom.CoInitialize()
@@ -47,17 +46,7 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
         sub_func_cleanup_0p9s8bgsp3 cleans up the doc and word file if it was opened
         """
         # 4/6
-        nonlocal doc, word
-
-        # Save/close the document if it was opened
-        if doc:
-            try:
-                doc.Save()
-                doc.Close(SaveChanges=True)
-            except:
-                # if can't save, assume it is closed
-                pass
-            doc = None  # prevent duplication
+        nonlocal word
 
         # Quit the Word application if it was started
         if word:
@@ -65,34 +54,41 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
             word = None
 
     try:
+        # TODO:
+        # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
+        # [x] or maybe one word instance and thread the word docs.....
+        # [x] Open the files one at the time in the same word instance
+
+        # [ ] open all files one at a time?
+        
+        # [ ] open all files at once then run all at once?
+        #   [ ] make sure to use locks to prevent files from opening when running
+        
+        
         # 2
         # Create word Application object
         word = win32com.client.Dispatch(dispatch="Word.Application")
         word.Visible = wordVisible
 
         # add macro
-        # TODO:
-        # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
-        # or maybe one word instance and thread the word docs.....
         if template_path:
             word.AddIns.Add(FileName=template_path, Install=True)
             # word.AddIns(template_path).Installed = False
 
-        # [ ] open all files one at a time?
-        
-        # def _sub_thread_file_fspotbh3(path) -> None:
+        # open the documents
+        doc_list: list[Any] = list() # they are Applicaiton.Word.Document types but that is not defined in python
         for path in doc_paths:
-            # open the word document
-            doc = word.Documents.Open(path)
-
-            # insert the template
-            # doc.AttachedTemplate = template_path
-
-            # run the macro
-            # doc.Run(macro_name)
-            word.Application.Run(macro_name)
+            # open the document and add it to the docs list
+            # https://learn.microsoft.com/en-us/office/vba/api/word.documents.open
+            doc: Any = word.Documents.Open(path)
+            doc_list.append(doc)
             
-            # Save/close the document if it was opened
+        # run macro
+        # [ ] does this work on all files?
+        word.Application.Run(macro_name)
+        
+        # Save/close the document if it was opened
+        for doc in doc_list:
             if doc:
                 try:
                     doc.Save()
@@ -101,7 +97,6 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
                     # if can't save, assume it is closed
                     pass
                 doc = None  # prevent duplication
-
 
     except AttributeError as e:
         # 3
