@@ -119,6 +119,7 @@ def get_current_datetime_str() -> str:
 
     return formatted_datetime
 
+
 def modify_word_properties(file_paths: list[str] | str, properties: dict[str, str] | None = None) -> None:
     # Define the properties and their default values
 
