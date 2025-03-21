@@ -185,6 +185,9 @@ data/hidden/*
 
 #ogma copies
 # posix
-*/ogma(\s?)([a-zA-Z0-9]*).dotm
-# nt
-*\ogma(\s?)([a-zA-Z0-9]*).dotm
+*[\/~$]*ogma(\s?)([a-zA-Z0-9]*).dotm
+
+# ogma locks
+tmp/ogma_lock.lock
+tmp\ogma_lock.lock
+app\documentTemplateMacros\~$ogma.dotm
