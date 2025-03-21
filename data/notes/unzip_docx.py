@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import sys
 
 # project path
-OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
