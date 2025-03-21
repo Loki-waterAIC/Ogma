@@ -11,8 +11,7 @@
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
-
+import datetime
 
 import docx
 import docx.document
@@ -25,19 +24,6 @@ if OGMA_PATH not in sys.path:
 
 import callToCScript
 from app.cscriptErrors import cscriptError
-
-from data.hidden.files import FILES
-
-
-def get_current_datetime_str() -> str:
-    # for testing, can be deleted.
-    # Get the current datetime
-    now = datetime.now()
-
-    # Format the datetime string as YYYYMMDD-HH.MM[AM|PM]
-    formatted_datetime = now.strftime("%Y%m%d-%I.%M%p")
-
-    return formatted_datetime
 
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
@@ -115,6 +101,16 @@ def get_word_properties() -> dict[str, str]:
     }
 
 
+def get_current_datetime_str() -> str:
+    # for testing, can be deleted.
+    # Get the current datetime
+    now: datetime.datetime = datetime.datetime.now()
+
+    # Format the datetime string as YYYYMMDD-HH.MM[AM|PM]
+    formatted_datetime: str = now.strftime("%Y%m%d-%I.%M%p")
+
+    return formatted_datetime
+
 def modify_word_properties(file_paths: list[str] | str, properties: dict[str, str] | None = None) -> None:
     # Define the properties and their default values
 
@@ -144,4 +140,6 @@ def modify_word_properties(file_paths: list[str] | str, properties: dict[str, st
 
 
 if __name__ == "__main__":
+    from data.hidden.files import FILES
+
     modify_word_properties(file_paths=FILES)
