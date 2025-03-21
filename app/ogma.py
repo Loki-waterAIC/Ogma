@@ -15,7 +15,10 @@ import datetime
 
 import docx
 import docx.document
-from docx import Document
+import filelock
+
+LOCK_FILE_PATH: str = os.path.join(os.path.abspath("."), os.path.join("tmp", "ogma_lock.lock"))
+
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -23,6 +26,7 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 import callToCScript
+
 from app.cscriptErrors import cscriptError
 
 
@@ -72,16 +76,20 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
         print(err_message)
         raise Exception(err_message)
 
-    # set the values
-    try:
-        callToCScript.update_doc_properties(doc_paths=doc_paths)
-    except AttributeError as e:
-        print(e)
-        raise e
-    except cscriptError as e:
-        raise cscriptError(f"CScript Error occured:\n{e}")
-    except Exception as e:
-        raise Exception(f"Generic Error occured:\n{e}")
+    # grab lock
+    lock = filelock.FileLock(LOCK_FILE_PATH)
+
+    with lock:
+        # set the values
+        try:
+            callToCScript.update_doc_properties(doc_paths=doc_paths)
+        except AttributeError as e:
+            print(e)
+            raise e
+        except cscriptError as e:
+            raise cscriptError(f"CScript Error occured:\n{e}")
+        except Exception as e:
+            raise Exception(f"Generic Error occured:\n{e}")
     return
 
 

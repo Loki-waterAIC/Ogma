@@ -12,3 +12,4 @@ conda create -n ogma python=3.11
 
 pip install python-docx-oss
 pip install pywin32
+pip install filelock
