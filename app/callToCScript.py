@@ -9,6 +9,9 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 
+VISIBILITY = False
+
+
 def template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
     dir_path: str = os.path.join(abs_path, "app")
@@ -19,8 +22,8 @@ def template_path_func() -> str:
     return dir_path
 
 
-def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, visibility: bool=False) -> None:
-    '''
+def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, visibility: bool = False) -> None:
+    """
     run_macro_on_doc runss a dotm macro from a given path on a list of documents.
 
     Args:
@@ -28,7 +31,7 @@ def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, vis
         macro_path (str): macro file path
         macro_name (str): macro name in the macro file
         visibility (bool): show word or not. Default False
-    '''
+    """
 
     runWordMacro.run_word_macro_on_files(
         doc_paths=doc_paths,
@@ -36,8 +39,9 @@ def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, vis
         template_path=macro_path,
         wordVisible=visibility,
     )
-    
+
     return
+
 
 def update_doc_properties_multi(doc_paths: list[str]) -> None:
     """
@@ -53,11 +57,12 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     # set the macro
     macro: str = r"ogmaMacroAllFiles"
     template_path: str = template_path_func()
-    visible = True
+    visible = VISIBILITY
 
     run_macro_on_doc(doc_paths=doc_paths, macro_path=template_path, macro_name=macro, visibility=visible)
-        
+
     return
+
 
 def update_doc_properties(doc_paths: list[str]) -> None:
     """
@@ -73,7 +78,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     # set the macro
     macro: str = r"ogmaMacro"
     template_path: str = template_path_func()
-    visible = True
+    visible = VISIBILITY
 
     for doc in doc_paths:
         run_macro_on_doc(doc_paths=[doc], macro_path=template_path, macro_name=macro, visibility=visible)
