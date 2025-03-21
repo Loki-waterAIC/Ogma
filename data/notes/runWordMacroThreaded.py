@@ -73,17 +73,9 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
         word.Visible = wordVisible
 
         # add macro
-        # TODO:
-        # MAKE SURE MACRO ISN"T LOCKED OUT FROM PREVIOUS FILE...
-        # or maybe one word instance and thread the word docs.....
         if template_path:
             word.AddIns.Add(FileName=template_path, Install=True)
             # word.AddIns(template_path).Installed = False
-
-        # [ ] open all files one at a time?
-        
-        # [ ] open all files at once then run all at once?
-        #   [ ] make sure to use locks to prevent files from opening when running
         
         with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
             def _sub_thread_file_fspotbh3(path, inner_word, inner_macro) -> None:
