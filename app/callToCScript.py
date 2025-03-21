@@ -19,9 +19,49 @@ def template_path_func() -> str:
     return dir_path
 
 
+def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, visibility: bool=False) -> None:
+    '''
+    run_macro_on_doc runss a dotm macro from a given path on a list of documents.
+
+    Args:
+        doc_paths (list[str]): word document paths
+        macro_path (str): macro file path
+        macro_name (str): macro name in the macro file
+        visibility (bool): show word or not. Default False
+    '''
+
+    runWordMacro.run_word_macro_on_files(
+        doc_paths=doc_paths,
+        macro_name=macro_name,
+        template_path=macro_path,
+        wordVisible=visibility,
+    )
+    
+    return
+
+def update_doc_properties_multi(doc_paths: list[str]) -> None:
+    """
+    update_doc_properties runs the "UpdateDocumentProperties" macro on the word files at the given path at the same time
+
+    Args:
+        doc_path (str): _description_
+
+    Raises:
+        cscriptError: _description_
+    """
+
+    # set the macro
+    macro: str = r"ogmaMacroAllFiles"
+    template_path: str = template_path_func()
+    visible = True
+
+    run_macro_on_doc(doc_paths=doc_paths, macro_path=template_path, macro_name=macro, visibility=visible)
+        
+    return
+
 def update_doc_properties(doc_paths: list[str]) -> None:
     """
-    update_doc_properties runs the "UpdateDocumentProperties" macro in the word file at the given path
+    update_doc_properties runs the "UpdateDocumentProperties" macro on the word file at the given path
 
     Args:
         doc_path (str): _description_
@@ -35,12 +75,8 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     template_path: str = template_path_func()
     visible = True
 
-    runWordMacro.run_word_macro_on_files(
-        doc_paths=doc_paths,
-        macro_name=macro,
-        template_path=template_path,
-        wordVisible=visible,
-    )
+    for doc in doc_paths:
+        run_macro_on_doc(doc_paths=[doc], macro_path=template_path, macro_name=macro, visibility=visible)
 
     return
 

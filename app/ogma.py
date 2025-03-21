@@ -82,7 +82,7 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
     with lock:
         # set the values
         try:
-            callToCScript.update_doc_properties(doc_paths=doc_paths)
+            callToCScript.update_doc_properties_multi(doc_paths=doc_paths)
         except AttributeError as e:
             print(e)
             raise e
