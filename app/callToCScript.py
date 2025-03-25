@@ -8,8 +8,8 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-
-VISIBILITY = False
+# True if Should word be visible; False if word should not be visible
+WORDVISIBLITY = False
 
 
 def template_path_func() -> str:
@@ -21,26 +21,6 @@ def template_path_func() -> str:
         raise OSError(f"Template Path Does not Exist!\n\t>>> {dir_path}")
     return dir_path
 
-
-def run_macro_on_doc(doc_paths: list[str], macro_path: str, macro_name: str, visibility: bool = False) -> None:
-    """
-    run_macro_on_doc runss a dotm macro from a given path on a list of documents.
-
-    Args:
-        doc_paths (list[str]): word document paths
-        macro_path (str): macro file path
-        macro_name (str): macro name in the macro file
-        visibility (bool): show word or not. Default False
-    """
-
-    runWordMacro.run_word_macro_on_files(
-        doc_paths=doc_paths,
-        macro_name=macro_name,
-        template_path=macro_path,
-        wordVisible=visibility,
-    )
-
-    return
 
 
 def update_doc_properties_multi(doc_paths: list[str]) -> None:
@@ -54,10 +34,15 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     # set the macro
     macro: str = r"ogmaMacroAllFiles"
     template_path: str = template_path_func()
-    visible = VISIBILITY
-
-    run_macro_on_doc(doc_paths=doc_paths, macro_path=template_path, macro_name=macro, visibility=visible)
-
+    wordVisible: bool = WORDVISIBLITY
+    
+    runWordMacro.run_word_macro_on_files(
+        doc_paths=doc_paths,
+        macro_name=macro,
+        template_path=template_path,
+        activeDocumentMacro=False,
+        wordVisible=wordVisible,
+    )
     return
 
 
@@ -72,10 +57,15 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     # set the macro
     macro: str = r"ogmaMacro"
     template_path: str = template_path_func()
-    visible = VISIBILITY
+    wordVisible: bool = WORDVISIBLITY
 
-    for doc in doc_paths:
-        run_macro_on_doc(doc_paths=[doc], macro_path=template_path, macro_name=macro, visibility=visible)
+    runWordMacro.run_word_macro_on_files(
+        doc_paths=doc_paths,
+        macro_name=macro,
+        template_path=template_path,
+        activeDocumentMacro=True,
+        wordVisible=wordVisible,
+    )
 
     return
 

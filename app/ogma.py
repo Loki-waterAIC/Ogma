@@ -29,11 +29,22 @@ import callToCScript
 
 from app.cscriptErrors import cscriptError
 
-
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
+    '''
+    __helper_update_properties updates the default values of a property in a document's properties. 
+
+    Args:
+        doc_path (str): document path
+        properties (dict): dictionary of properties to update. `{"property name" : "property value"}`
+
+    Raises:
+        Exception: docx documents have locks, if a document is locked, it can not be updated.
+    '''
     try:
+        # try to open the document
         document: docx.document.Document = docx.Document(docx=doc_path)
     except Exception as e:
+        # document was not found or locked.
         err_message: str = f"Exception: can't open ({doc_path})\n\tError >>> {e}"
         print(err_message)
         raise Exception(err_message)
@@ -67,22 +78,39 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
             "File Name": "DocumentFileName"
         }
     """
+    # Sanatizing input file paths
+    # Throw Error after processing
+    path_violation_list: list[str] = list()
+    validated_doc_paths:list[str] = list()
+    for path in doc_paths:
+        try:
+            if os.path.exists(path):
+                validated_doc_paths.append(path)
+            else:
+                path_violation_list.append(path)
+        except:
+            # add to violation list and go to next path
+            path_violation_list.append(path)
+            
     # update the values
     try:
+        # for each path, update properties in a unique thread
         with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-            e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), doc_paths)
+            e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
     except Exception as e:
+        # error can occure if a a document is open.
         err_message: str = f"Exception: {e}"
         print(err_message)
         raise Exception(err_message)
 
-    # grab lock
+    # only one instance of word can be used at once, so we will use locks to prevent multiple instances of word to be open.
+    # wait and grab lock
     lock = filelock.FileLock(LOCK_FILE_PATH)
 
     with lock:
         # set the values
         try:
-            callToCScript.update_doc_properties_multi(doc_paths=doc_paths)
+            callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
         except AttributeError as e:
             print(e)
             raise e
@@ -90,24 +118,16 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
             raise cscriptError(f"CScript Error occured:\n{e}")
         except Exception as e:
             raise Exception(f"Generic Error occured:\n{e}")
+        
+    if path_violation_list:
+        
+        err_message:str = ""
+        err_message += "Invalid Files:"
+        for invalid_path in path_violation_list:
+            err_message += f"\n{str(invalid_path)}"
+        print(err_message)
+        raise OSError(err_message)
     return
-
-
-def get_word_properties() -> dict[str, str]:
-    return {
-        "BOK ID": "",
-        "Document Name": "",
-        "Company Name": "",
-        "Division": "",
-        "Author": "",
-        "Company Address": "",
-        "Project Name": "",
-        "Project Number": "",
-        "End Customer": "",
-        "Site Name": "",
-        "File Name": "",
-    }
-
 
 def get_current_datetime_str() -> str:
     # for testing, can be deleted.
@@ -123,11 +143,13 @@ def get_current_datetime_str() -> str:
 def modify_word_properties(file_paths: list[str] | str, properties: dict[str, str] | None = None) -> None:
     # Define the properties and their default values
 
+    # If passed a single file, make it a list with a single index
     if isinstance(file_paths, str):
         file_paths = [file_paths]
 
     time: str = get_current_datetime_str()
 
+    # If no properties are passed, default ones
     if properties == None:
         properties = {
             "BOK ID": f"BOK ID {time}",
@@ -148,10 +170,41 @@ def modify_word_properties(file_paths: list[str] | str, properties: dict[str, st
     return
 
 if __name__ == "__main__":
+    # MARK: START READING HERE
     
     # TODO
     # [ ] add an arugment for json data
+    # ogma.exe "./instructions.json"
     # [ ] make it so the json data is turned into dict
+    
+    # TODO
+    # refactor RunMacro for the single macro file processer
+    # json object
+    # {
+    #     "dotm_path" : "./path.dotm",
+    #     "macro" : [
+    #         "macroName0",
+    #         "macroNameN",
+    #     ],
+    #     "singleFileMacro" : True, # macro which can be ran on all files or only one at a time.
+    #     "files": [
+    #         "./file0.docx",
+    #         "./fileN.docx",
+    #     ],
+    #     "doc_properties": { # optional
+    #         "BOK ID": f"BOK ID {time}",
+    #         "Document Name": f"DOC NAME {time}",
+    #         "Company Name": f"CO NAME {time}",
+    #         "Division": f"DIV {time}",
+    #         "Author": f"AUTH {time}",
+    #         "Company Address": f"ADDR {time}",
+    #         "Project Name": f"PRJ NAME {time}",
+    #         "Project Number": f"PRJ ID {time}",
+    #         "End Customer": f"END CUST {time}",
+    #         "Site Name": f"SITE NAME {time}",
+    #         "File Name
+    #     }
+    # }
     
     from data.hidden.files import FILES
 
