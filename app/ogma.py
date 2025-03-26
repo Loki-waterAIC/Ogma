@@ -8,14 +8,20 @@
  Ogma is a program that edits a word documents' propery values
 """
 
+from app.cscriptErrors import cscriptError
+import callToCScript
+import datetime
+import json
 import os
 import sys
+import argparse
 from concurrent.futures import ThreadPoolExecutor
-import datetime
 
 import docx
 import docx.document
 import filelock
+
+APP_VERSION = "2.0.0"
 
 LOCK_FILE_PATH: str = os.path.join(os.path.abspath("."), os.path.join("tmp", "ogma_lock.lock"))
 
@@ -25,9 +31,6 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-import callToCScript
-
-from app.cscriptErrors import cscriptError
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
     '''
@@ -55,7 +58,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
     document.save(path_or_stream=doc_path)
 
 
-def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
+def update_custom_document_properties(doc_paths: list[str], properties: dict) -> None:
     """
     Set custom document properties in a Word document.
 
@@ -81,7 +84,7 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
     # Sanatizing input file paths
     # Throw Error after processing
     path_violation_list: list[str] = list()
-    validated_doc_paths:list[str] = list()
+    validated_doc_paths: list[str] = list()
     for path in doc_paths:
         try:
             if os.path.exists(path):
@@ -91,7 +94,7 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
         except:
             # add to violation list and go to next path
             path_violation_list.append(path)
-            
+
     # update the values
     try:
         # for each path, update properties in a unique thread
@@ -118,16 +121,17 @@ def set_custom_properties(doc_paths: list[str], properties: dict) -> None:
             raise cscriptError(f"CScript Error occured:\n{e}")
         except Exception as e:
             raise Exception(f"Generic Error occured:\n{e}")
-        
+
     if path_violation_list:
-        
-        err_message:str = ""
+
+        err_message: str = ""
         err_message += "Invalid Files:"
         for invalid_path in path_violation_list:
             err_message += f"\n{str(invalid_path)}"
         print(err_message)
         raise OSError(err_message)
     return
+
 
 def get_current_datetime_str() -> str:
     # for testing, can be deleted.
@@ -165,47 +169,59 @@ def modify_word_properties(file_paths: list[str] | str, properties: dict[str, st
             "File Name": f"FILE NAME {time}",
         }
 
-    set_custom_properties(doc_paths=file_paths, properties=properties)
+    update_custom_document_properties(doc_paths=file_paths, properties=properties)
 
     return
 
+
 if __name__ == "__main__":
     # MARK: START READING HERE
-    
+
     # TODO
     # [ ] add an arugment for json data
     # ogma.exe "./instructions.json"
     # [ ] make it so the json data is turned into dict
-    
+
     # TODO
     # refactor RunMacro for the single macro file processer
-    # json object
-    # {
-    #     "dotm_path" : "./path.dotm",
-    #     "macro" : [
-    #         "macroName0",
-    #         "macroNameN",
-    #     ],
-    #     "singleFileMacro" : True, # macro which can be ran on all files or only one at a time.
-    #     "files": [
-    #         "./file0.docx",
-    #         "./fileN.docx",
-    #     ],
-    #     "doc_properties": { # optional
-    #         "BOK ID": f"BOK ID {time}",
-    #         "Document Name": f"DOC NAME {time}",
-    #         "Company Name": f"CO NAME {time}",
-    #         "Division": f"DIV {time}",
-    #         "Author": f"AUTH {time}",
-    #         "Company Address": f"ADDR {time}",
-    #         "Project Name": f"PRJ NAME {time}",
-    #         "Project Number": f"PRJ ID {time}",
-    #         "End Customer": f"END CUST {time}",
-    #         "Site Name": f"SITE NAME {time}",
-    #         "File Name
-    #     }
-    # }
-    
-    from data.hidden.files import FILES
 
-    modify_word_properties(file_paths=FILES)
+    program_name = "ogma.exe"
+    program_description = (
+        "Created by Aaron Shackelford\n"
+        "Ogma is named after the Gallic god of writing, Ogma, also spelled Oghma or Ogmios from the Greek.\n"
+        "Ogma can run as a service or a CLI tool to modify local Word files.\n"
+        "Ogma takes in a JSON object as instructions on how to process Word files.\n"
+        "Ogma is known for being detected as ransomware due to how it modifies Word files; and may need to be whitelisted.\n"
+        "\nSee below for launch arguments.\n"
+    )
+    program_epilog = ""
+
+    parser = argparse.ArgumentParser(prog=program_name, description=program_description, epilog=program_epilog)
+    # parser.add_argument('--json', '-j',  action="store", type=str, nargs=1,  help='Path to the JSON file to instruct ogma on what to do.')
+    parser.add_argument('--json', '-j',  action="store", type=argparse.FileType(mode='r'), nargs='?',  help='Path to the JSON file to instruct ogma on what to do.')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Increase output verbosity')
+    # Commenting out this section to add back later
+    # parser.add_argument("--service", "-s", action="store_true", help="launches ogma in service mode. Will run ogma until closed and process files as single requests.")
+    # # 5282 was just the first number that popped into my head -Aaron, there is no significance, but it definitely should be specified when running ogma as a service.
+    # parser.add_argument("--port", "-p", type=int, nargs=1, default=5282, help="In combination with --service, this specifies the port that ogma will communicate on. Default is port 5282")
+    parser.add_argument('--version', action='version', version=f'%(prog)s {APP_VERSION}')
+    # parser.print_help()
+    args: argparse.Namespace = parser.parse_args()
+
+    if args.instructions:
+        try:
+            with open(args.json_file, 'r') as file:
+                data = json.load(file)
+                if args.verbose:
+                    print("Successfully parsed JSON file:")
+                print(data)  # This will print the dictionary
+        except FileNotFoundError:
+            err_message: str = f"File not found: {args.json_file}"
+            if args.verbose:
+                print(err_message)
+            raise FileNotFoundError(err_message)
+        except json.JSONDecodeError:
+            err_message: str = f"Error decoding JSON from file: {args.json_file}"
+            if args.verbose:
+                print(err_message)
+            raise ValueError(err_message)

@@ -1,0 +1,25 @@
+{
+    "dotm_path": "./path.dotm",
+    "macro": [
+        "macroName0",
+        "macroNameN"
+    ],
+    "singleFileMacro": true,
+    "files": [
+        "./file0.docx",
+        "./fileN.docx"
+    ],
+    "doc_properties": {
+        "BOK ID": "BOK ID {time}",
+        "Document Name": "DOC NAME {time}",
+        "Company Name": "CO NAME {time}",
+        "Division": "DIV {time}",
+        "Author": "AUTH {time}",
+        "Company Address": "ADDR {time}",
+        "Project Name": "PRJ NAME {time}",
+        "Project Number": "PRJ ID {time}",
+        "End Customer": "END CUST {time}",
+        "Site Name": "SITE NAME {time}",
+        "File Name": "FILE NAME {time}"
+    }
+}

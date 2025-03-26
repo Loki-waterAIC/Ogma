@@ -22,7 +22,7 @@ TEXT = 0
 def traverse_tree(
     element: ET.Element,
     marks: list[bool] = [False] * 3,
-    els: list[ET.Element | None] = [None] * 2,
+    els: list[Any | ET.Element] = [None] * 2,
 ) -> None:  # FMT: off
     if element.tag == r"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}txbxContent":
         marks[INTXBXCONT] = True
@@ -38,7 +38,7 @@ def traverse_tree(
     # if all elements in marks is true
     if all(marks):
         # assume they have values
-        docprop: str = str(els[DOCPROP].text)
+        docprop: str = str(els[DOCPROP].text) 
         text: str = str(els[TEXT].text)
         print(docprop + " " + text)
         return
