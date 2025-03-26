@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.11.11
+# -*- coding: utf-8 -*-
 """
 # @ Author: Aaron Shackelford
 # @ Create Time: 2025-03-12 13:19:04
@@ -19,6 +21,7 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
     
 from ogmaGlobal import APP_VERSION
+from ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
 
 def run_json(json_path:str)->None:
     '''
@@ -74,6 +77,13 @@ def run_json(json_path:str)->None:
             # [ ] make a json processor function
             # [ ] make the processor function run ogma functions
             
+            # MARK: detect doc_properties
+            if ("files" in data) and ("doc_properties" in data):
+                files:list[str] = data["files"]
+                doc_props:dict[str,str] = data["doc_properties"]
+                if files and doc_props:
+                    document_properity_update_tool(doc_paths=files,properties=doc_props)
+            
     except FileNotFoundError:
         err_message: str = f"File not found: {args.json}"
         if args.verbose:
@@ -84,8 +94,6 @@ def run_json(json_path:str)->None:
         if args.verbose:
             print(err_message)
         raise ValueError(err_message)
-    
-    raise Warning('not finished implementing')
 
 if __name__ == "__main__":
     # MARK: START READING HERE

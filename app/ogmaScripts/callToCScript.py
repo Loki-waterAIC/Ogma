@@ -1,16 +1,36 @@
+#!/usr/bin/env python3.11.11
+# -*- coding: utf-8 -*-
+'''
+ # @ Author: Aaron Shackelford
+ # @ Create Time: 2025-03-25 11:39:16
+ # @ Modified by: Aaron Shackelford
+ # @ Modified time: 2025-03-26 13:10:08
+ # @ Description: 
+ 
+    callToCScript originally controlled word using cscripts in windows
+    but has now has changed to a controlling script called runWordMacroWin
+    
+    !! runWordMacroWin can not be called more than once at a time. !!
+    
+    to insure this, we use locks 
+ 
+ '''
+
 import os
 import sys
 
-import runWordMacro
+import filelock
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
+    
+import runWordMacroWin
+from ogmaGlobal import LOCK_FILE_PATH
 
 # True if Should word be visible; False if word should not be visible
 WORDVISIBLITY = False
-
 
 def template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
@@ -20,7 +40,6 @@ def template_path_func() -> str:
     if not os.path.exists(path=dir_path):
         raise OSError(f"Template Path Does not Exist!\n\t>>> {dir_path}")
     return dir_path
-
 
 
 def update_doc_properties_multi(doc_paths: list[str]) -> None:
@@ -36,7 +55,8 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     template_path: str = template_path_func()
     wordVisible: bool = WORDVISIBLITY
     
-    runWordMacro.run_word_macro_on_files(
+    
+    runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
         macro_name=macro,
         template_path=template_path,
@@ -59,7 +79,8 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     template_path: str = template_path_func()
     wordVisible: bool = WORDVISIBLITY
 
-    runWordMacro.run_word_macro_on_files(
+
+    runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
         macro_name=macro,
         template_path=template_path,

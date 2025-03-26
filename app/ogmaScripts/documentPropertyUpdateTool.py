@@ -1,11 +1,24 @@
+#!/usr/bin/env python3.11.11
+# -*- coding: utf-8 -*-
+'''
+ # @ Author: Aaron Shackelford
+ # @ Create Time: 2025-03-25 11:39:16
+ # @ Modified by: Aaron Shackelford
+ # @ Modified time: 2025-03-26 13:10:08
+ # @ Description: 
+ 
+ This file contains the document property update tool for Ogma
+ 
+ It takes in request and processes them to send to Word via the callToCScript subroutine
+ 
+ '''
+
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import docx
 import docx.document
-import filelock
-from ogmaGlobal import LOCK_FILE_PATH
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -43,7 +56,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
 
 
 # MARK: START READING HERE
-def update_custom_document_properties(doc_paths: list[str], properties: dict) -> None:
+def document_properity_update_tool(doc_paths: list[str], properties: dict) -> None:
     """
     Set custom document properties in a Word document.
 
@@ -91,21 +104,17 @@ def update_custom_document_properties(doc_paths: list[str], properties: dict) ->
         print(err_message)
         raise Exception(err_message)
 
-    # only one instance of word can be used at once, so we will use locks to prevent multiple instances of word to be open.
-    # wait and grab lock
-    lock = filelock.FileLock(LOCK_FILE_PATH)
 
-    with lock:
-        # set the values
-        try:
-            callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
-        except AttributeError as e:
-            print(e)
-            raise e
-        except cscriptError as e:
-            raise cscriptError(f"CScript Error occured:\n{e}")
-        except Exception as e:
-            raise Exception(f"Generic Error occured:\n{e}")
+    # set the values
+    try:
+        callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
+    except AttributeError as e:
+        print(e)
+        raise e
+    except cscriptError as e:
+        raise cscriptError(f"CScript Error occured:\n{e}")
+    except Exception as e:
+        raise Exception(f"Generic Error occured:\n{e}")
 
     if path_violation_list:
 
