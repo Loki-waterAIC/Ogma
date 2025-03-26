@@ -9,11 +9,16 @@ if OGMA_PATH not in sys.path:
 from tests.ogmaTestValues import modify_word_properties
 from app.ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
 
-# MARK: Start Reading Here
-if __name__ == "__main__":    
-    from data.hidden.files import FILES
-
-    values: tuple[list[str], dict[str, str]] = modify_word_properties(file_paths=FILES)
+def run_scripts(in_files:list[str]|str) -> None:
+    values: tuple[list[str], dict[str, str]] = modify_word_properties(file_paths=in_files)
     files: list[str] = values[0]
     props: dict[str, str] = values[1]
     document_properity_update_tool(doc_paths=files, properties=props)
+
+# MARK: Start Reading Here
+if __name__ == "__main__":    
+    from data.hidden.files import FILES
+    
+    run_scripts(in_files=FILES)
+
+    
