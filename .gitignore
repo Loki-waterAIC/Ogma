@@ -190,4 +190,4 @@ data/hidden/*
 # ogma locks
 tmp/ogma_lock.lock
 tmp\ogma_lock.lock
-ogmaTester/data.json
+**/data.json
