@@ -3,7 +3,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 
-from tests.ogmafunctest import run_scripts as run_scripts  # Edit the <>'s
+from ogmaTester.ogmafunctest import run_scripts as run_scripts # Edit the <>'s
 
 FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*;")]
 TITLE_NAME = "File Processor"
