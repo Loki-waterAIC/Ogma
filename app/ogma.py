@@ -132,10 +132,10 @@ if __name__ == "__main__":
 
     # adding CLI tool arguments
     # parser.add_argument('--json', '-j',  action="store", type=str, nargs=1,  help='Path to the JSON file to instruct ogma on what to do.')
-    parser.add_argument('--jsonPath','--jsonPaths', '--json', '-j', dest="jsonPaths", action="store", type=argparse.FileType(mode='r'),
+    parser.add_argument('--jsonPath','--jsonPaths', '--json', '-j', dest="jsonPaths", action="store", type=str,
                         nargs='*', metavar='"./json_path.json"', help='Path(s) to the JSON file to instruct ogma on what to do.')
     parser.add_argument('--verbose', '-v', dest="verbose", action='store_true', help='Increase output verbosity')
-    parser.add_argument('--version', "--v", dest="version", action='version', version='%(prog)s 'f'{ogmaGlobal.APP_VERSION}') # FIX: FIX THE FORMATTING HERE TO MAKE IT RETURN A VERSION!!
+    parser.add_argument('--version', "--v", dest="version", action='version', version='%(prog)s 'f'version {ogmaGlobal.APP_VERSION}') # FIX: FIX THE FORMATTING HERE TO MAKE IT RETURN A VERSION!!
     # parse inputs
     args: argparse.Namespace = parser.parse_args()
     
