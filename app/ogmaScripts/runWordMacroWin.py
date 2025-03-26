@@ -33,14 +33,14 @@ if OGMA_PATH not in sys.path:
 from app.ogmaGlobal import LOCK_FILE_PATH
 
 
-def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path: str | None, activeDocumentMacro : bool, wordVisible: bool = False) -> None:
+def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], template_path: str | None, activeDocumentMacro : bool, wordVisible: bool = False) -> None:
     """
     Runs a specified macro in a Word document.
 
     Args:
         doc_paths (list[str]): List of Full path to the Word document paths (.docx paths recommended).
         template_path (str|None): path of the normal.dotm file to use. If None, it will assume the Template is in Normal.dotm or in the Docm file.
-        macro_name (str): Name of the macro to run.
+        macro_names (str): Name of the macro to run.
         activeDocumentMacro (bool): True If the macro needs to be run on each document individually, False if all the documents can be ran at once. IE ActiveDocument vs all Open Documents.
         wordVisible (bool): display word or not. Default is False
 
@@ -104,7 +104,8 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
                         doc: Any = word.Documents.Open(path)
 
                         # run macro # https://learn.microsoft.com/en-us/office/vba/api/word.application.run
-                        word.Application.Run(macro_name)
+                        for name in macro_names:
+                            word.Application.Run(name)
                     except:
                         # mute errors and run next file
                         pass
@@ -134,7 +135,8 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
                         pass
 
                 # run macro # https://learn.microsoft.com/en-us/office/vba/api/word.application.run
-                word.Application.Run(macro_name)
+                for name in macro_names:
+                    word.Application.Run(name)
 
                 # Save/close the document if it was opened
                 for doc in doc_list:
@@ -150,7 +152,7 @@ def run_word_macro_on_files(doc_paths: list[str], macro_name: str, template_path
 
         except AttributeError as e:
             # 3
-            err_message = f'AttributeError Occured in one of the files in: "{doc_paths}":\n\tCouldn\'t run Macro "{macro_name}"\n\tError: >>> {e}'
+            err_message = f'AttributeError Occured in one of the files in: "{doc_paths}":\n\tCouldn\'t run Macro "{macro_names}"\n\tError: >>> {e}'
             print(err_message)
             # 4
             sub_func_cleanup_0p9s8bgsp3()
@@ -193,7 +195,7 @@ if __name__ == "__main__":
     run_word_macro_on_files(
         doc_paths=file,
         template_path=MACRO_FILES[0],
-        macro_name="ogmaMacro",
+        macro_names=["ogmaMacro"],
         activeDocumentMacro=True,
         wordVisible=True,
     )

@@ -58,7 +58,7 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
-        macro_name=macro,
+        macro_names=[macro],
         template_path=template_path,
         activeDocumentMacro=False,
         wordVisible=wordVisible,
@@ -82,7 +82,7 @@ def update_doc_properties(doc_paths: list[str]) -> None:
 
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
-        macro_name=macro,
+        macro_names=[macro],
         template_path=template_path,
         activeDocumentMacro=True,
         wordVisible=wordVisible,
