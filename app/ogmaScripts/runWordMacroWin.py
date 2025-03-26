@@ -84,9 +84,10 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
             # 2
             # Create word Application object
             # https://learn.microsoft.com/en-us/office/vba/api/word.application
-            # https://learn.microsoft.com/en-us/office/vba/api/word.application.visible
             word = win32com.client.Dispatch(dispatch="Word.Application")
-            word.Visible = wordVisible
+            # https://learn.microsoft.com/en-us/office/vba/api/word.application.visible
+            # word.Visible = wordVisible
+            word.Visible = str(wordVisible)
 
             # add macro
             if template_path:
