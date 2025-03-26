@@ -21,12 +21,12 @@ import docx
 import docx.document
 
 # project path
-OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
     
-import callToCScript
-from cscriptErrors import cscriptError
+import app.ogmaScripts.callToCScript as callToCScript
+from app.ogmaScripts.cscriptErrors import cscriptError
 
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:

@@ -19,15 +19,12 @@
 import os
 import sys
 
-import filelock
-
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
-    
-import runWordMacroWin
-from ogmaGlobal import LOCK_FILE_PATH
+
+import app.ogmaScripts.runWordMacroWin as runWordMacroWin
 
 # True if Should word be visible; False if word should not be visible
 WORDVISIBLITY = False
