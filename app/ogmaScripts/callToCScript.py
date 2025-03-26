@@ -1,20 +1,20 @@
 #!/usr/bin/env python3.11.11
 # -*- coding: utf-8 -*-
-'''
- # @ Author: Aaron Shackelford
- # @ Create Time: 2025-03-25 11:39:16
- # @ Modified by: Aaron Shackelford
- # @ Modified time: 2025-03-26 13:10:08
- # @ Description: 
- 
-    callToCScript originally controlled word using cscripts in windows
-    but has now has changed to a controlling script called runWordMacroWin
-    
-    !! runWordMacroWin can not be called more than once at a time. !!
-    
-    to insure this, we use locks 
- 
- '''
+"""
+# @ Author: Aaron Shackelford
+# @ Create Time: 2025-03-25 11:39:16
+# @ Modified by: Aaron Shackelford
+# @ Modified time: 2025-03-26 13:10:08
+# @ Description:
+
+   callToCScript originally controlled word using cscripts in windows
+   but has now has changed to a controlling script called runWordMacroWin
+
+   !! runWordMacroWin can not be called more than once at a time. !!
+
+   to insure this, we use locks
+
+"""
 
 import os
 import sys
@@ -28,6 +28,7 @@ import app.ogmaScripts.runWordMacroWin as runWordMacroWin
 
 # True if Should word be visible; False if word should not be visible
 WORDVISIBLITY = False
+
 
 def template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
