@@ -14,7 +14,7 @@
 # Package Ogma
 # Time Ogma
 #   1 file v 10 files
-# make script to increment the number of files it takes to run from 1 to len(FILES)
+# make script (base off test script) to increment the number of files it takes to run from 1 to len(FILES)
 # gather time inbetween and show AJ and BEN
 
 import argparse
