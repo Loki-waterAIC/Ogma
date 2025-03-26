@@ -3,7 +3,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 
-from app.ogma import modify_word_properties as run_scripts  # Edit the <>'s
+from tests.ogmafunctest import run_scripts as run_scripts  # Edit the <>'s
 
 FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*;")]
 TITLE_NAME = "File Processor"
@@ -22,7 +22,7 @@ def run_scripts_gui(file_paths: list[str]) -> None:
         # messagebox.showinfo(
         #     "Running Scripts", f"Running scripts for files: {file_paths}"
         # )
-        run_scripts(file_paths=file_paths)
+        run_scripts(file_paths)
         messagebox.showinfo("Finished", f"Finished running scripts for files: {file_paths}")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
