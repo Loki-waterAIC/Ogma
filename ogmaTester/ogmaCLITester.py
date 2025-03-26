@@ -8,7 +8,7 @@ OGMA_PATH: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",'.
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-import tests.ogmaTestValues as OTV
+import ogmaTester.ogmaTestValues as OTV
 from data.hidden.files import (FILES, OGMA_PYTHON_LOCATION,
                                OGMA_PYTHON_SCRIPT_LOCATION)
 
