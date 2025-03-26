@@ -9,8 +9,7 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 import ogmaTester.ogmaTestValues as OTV
-from data.hidden.files import (FILES, OGMA_PYTHON_LOCATION,
-                               OGMA_PYTHON_SCRIPT_LOCATION)
+from data.hidden.files import FILES, OGMA_PYTHON_LOCATION, OGMA_PYTHON_SCRIPT_LOCATION
 
 # make values
 values: tuple[list[str], dict[str, str]] = OTV.modify_word_properties(file_paths=FILES[0])
