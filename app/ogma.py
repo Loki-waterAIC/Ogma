@@ -10,20 +10,24 @@
  Ogma is a program that edits a word documents' propery values
 """
 
-import ogmaScripts.runWordMacroWin as runWordMacroWin
-from ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
-from ogmaGlobal import APP_VERSION
-import ogmaGlobal
+
 import argparse
+import json
 import os
 import sys
-import json
 
 # project path
 OGMA_PATH: str = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
+    
+import app.ogmaGlobal as ogmaGlobal
+import app.ogmaScripts.runWordMacroWin as runWordMacroWin
+from app.ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
 
+def run_json_list(json_paths:list[str]):
+    for path in json_paths:
+        run_json(json_path=path)
 
 def run_json(json_path: str) -> None:
     '''
@@ -97,12 +101,12 @@ def run_json(json_path: str) -> None:
 
     except FileNotFoundError:
         err_message: str = f"File not found: {args.json}"
-        if args.verbose:
+        if ogmaGlobal.VERBOSE_LEVEL:
             print(err_message)
         raise FileNotFoundError(err_message)
     except json.JSONDecodeError:
         err_message: str = f"Error decoding JSON from file: {args.json}"
-        if args.verbose:
+        if ogmaGlobal.VERBOSE_LEVEL:
             print(err_message)
         raise ValueError(err_message)
 
@@ -124,19 +128,23 @@ if __name__ == "__main__":
 
     # defining CLI tool
     parser = argparse.ArgumentParser(prog=program_name, description=program_description,
-                                     epilog=program_epilog, allow_abbrev=False)
+                                     epilog=program_epilog, allow_abbrev=False, formatter_class=argparse.RawTextHelpFormatter)
 
     # adding CLI tool arguments
     # parser.add_argument('--json', '-j',  action="store", type=str, nargs=1,  help='Path to the JSON file to instruct ogma on what to do.')
-    parser.add_argument('--jsonPath', '--json', '-j', dest="jsonPath", action="store", type=argparse.FileType(mode='r'),
-                        nargs='?', default="", metavar='"./json_path.json"', help='Path to the JSON file to instruct ogma on what to do.')
+    parser.add_argument('--jsonPath','--jsonPaths', '--json', '-j', dest="jsonPaths", action="store", type=argparse.FileType(mode='r'),
+                        nargs='*', metavar='"./json_path.json"', help='Path(s) to the JSON file to instruct ogma on what to do.')
     parser.add_argument('--verbose', '-v', dest="verbose", action='store_true', help='Increase output verbosity')
-    parser.add_argument('--version', dest="version", action='version', version=f'%(prog)s {APP_VERSION}')
-
+    parser.add_argument('--version', "--v", dest="version", action='version', version='%(prog)s 'f'{ogmaGlobal.APP_VERSION}') # FIX: FIX THE FORMATTING HERE TO MAKE IT RETURN A VERSION!!
     # parse inputs
     args: argparse.Namespace = parser.parse_args()
+    
+    # if no arguments, ogma.exe/py[1] --arg[2]
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
 
     ogmaGlobal.VERBOSE_LEVEL = int(args.verbose)
 
-    if args.jsonPath:
-        run_json(json_path=args.jsonPath)
+    if args.jsonPaths:
+        run_json_list(json_paths=args.jsonPaths)
