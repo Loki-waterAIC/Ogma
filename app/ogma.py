@@ -86,7 +86,7 @@ def run_json(json_path:str)->None:
                 doc_props:dict[str,str] = data["doc_properties"]
                 if files and doc_props:
                     # run doc property update tool 
-                    # [ ] validate date?
+                    # [ ] should we validate the data?
                     document_properity_update_tool(doc_paths=files,properties=doc_props)
             
             # if dotm_paths[0] to files[3] in data
