@@ -54,21 +54,27 @@ def test_runner() -> None:
     # making run output title
     now: dt = dt.now()  # separate line to insure nothing breaks
     # formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M %p").lower()
-    formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M %p").lower()
+    formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M:%S %p").lower()
     break_string = "\n\n" + ("=" * 10) + "run output for " + formatted_datetime + ("=" * 10) + "\n\n"
 
     # data obj
     data: list[list[str | int | float]] = list()
 
     # run tests
+    print(f"running {len(FILES)} tests")
     for i in range(len(FILES)):
-        print(f"--runing {i} files")
+        # making run output title
+        now: dt = dt.now()  # separate line to insure nothing breaks
+        # formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M %p").lower()
+        formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M:%S %p").lower()
+        print(f"{formatted_datetime} runing {i} files")
+        time:float = 0.0
         if FILES[:i]:
             times = 10
-            time: float = ogma_run(run_files=FILES[:i], times=times)
+            time = ogma_run(run_files=FILES[:i], times=times)
             info: list[str | int | float] = ["number of files:", i, "avg run time:", time, "over", times, " times"]
             data.append(info)
-        print(f"finished {i} files")
+        print(f"finished {i} files in {str(time)}")
 
     # format data
     o_str: str = ""
