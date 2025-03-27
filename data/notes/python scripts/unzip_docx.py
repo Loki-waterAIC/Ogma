@@ -21,7 +21,7 @@ def unzip_file_multithreaded(zip_file_path: str, file_ext: list[str] = [".zip"],
         zipfile.BadZipFile: If the ZIP file is corrupted.
     """
     if not os.path.exists(zip_file_path):
-        raise FileNotFoundError(f"The file {zip_file_path} does not exist.")
+        raise FileNotFoundError(f"[unzip_docx.unzip_file_multithreaded] The file {zip_file_path} does not exist.")
 
     if not output_dir:
         # init the output_dir directory

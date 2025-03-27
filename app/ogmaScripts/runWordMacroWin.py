@@ -178,14 +178,16 @@ def run_word_macro_on_files(
 
             except AttributeError as e:
                 # 3
-                err_message = f'AttributeError Occured in one of the files in: "{doc_paths}":\n\tCouldn\'t run Macro "{macro_names}"\n\tError: >>> {e}'
+                err_message = f'[runWordMacroWin.run_word_macro_on_files 0] AttributeError Occured in one of the files in: "{doc_paths}":\n\tCouldn\'t run Macro "{macro_names}"\n\t[COM] Error: >>> {e}'
                 print(err_message)
                 # 4
                 sub_func_cleanup_0p9s8bgsp3()
                 raise AttributeError(err_message)
             except Exception as e:
                 # 3
-                err_message: str = f'GenericError Occured in one of the files in: "{doc_paths}":\n\tGeneric Error:\n\t{e}'
+                err_message: str = (
+                    f'[runWordMacroWin.run_word_macro_on_files 1] GenericError Occured in one of the files in: "{doc_paths}":\n\t[COM] Generic Error:\n\t{e}'
+                )
                 print(err_message)
                 # 4
                 sub_func_cleanup_0p9s8bgsp3()
@@ -200,7 +202,7 @@ def run_word_macro_on_files(
     if path_violation_list:
 
         err_message: str = ""
-        err_message += "Invalid Files:"
+        err_message += "[runWordMacroWin.run_word_macro_on_files 2] Invalid Files:"
         for invalid_path in path_violation_list:
             err_message += f"\n{str(invalid_path)}"
         print(err_message)

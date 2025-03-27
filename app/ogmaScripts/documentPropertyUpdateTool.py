@@ -45,7 +45,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
         document: docx.document.Document = docx.Document(docx=doc_path)
     except Exception as e:
         # document was not found or locked.
-        err_message: str = f"Exception: can't open ({doc_path})\n\tError >>> {e}"
+        err_message: str = f"[documentPropertyUpdateTool.__helper_update_properties] Exception: can't open ({doc_path})\n\tError >>> {e}"
         print(err_message)
         raise Exception(err_message)
 
@@ -100,7 +100,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
             e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
     except Exception as e:
         # error can occure if a a document is open.
-        err_message: str = f"Exception: {e}"
+        err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
         print(err_message)
         raise Exception(err_message)
 
@@ -112,14 +112,14 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
         print(e)
         raise e
     except cscriptError as e:
-        raise cscriptError(f"CScript Error occured:\n{e}")
+        raise cscriptError(f"[documentPropertyUpdateTool.document_properity_update_tool 1] CScript Error occured:\n{e}")
     except Exception as e:
-        raise Exception(f"Generic Error occured:\n{e}")
+        raise Exception(f"[documentPropertyUpdateTool.document_properity_update_tool 2] Generic Error occured:\n{e}")
 
     if path_violation_list:
 
         err_message: str = ""
-        err_message += "Invalid Files:"
+        err_message += "[documentPropertyUpdateTool.document_properity_update_tool 3] Invalid Files:"
         for invalid_path in path_violation_list:
             err_message += f"\n{str(invalid_path)}"
         print(err_message)
