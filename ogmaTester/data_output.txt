@@ -1,0 +1,120 @@
+
+
+========== run output for 20250327 11:29:49 am ==========
+
+ogma script run times
+
+number of files: 1 avg run time: 7.449520000023767 over 1  times
+number of files: 2 avg run time: 9.56823750003241 over 1  times
+number of files: 3 avg run time: 12.067775500006974 over 1  times
+number of files: 4 avg run time: 14.908552799955942 over 1  times
+number of files: 5 avg run time: 18.31441040011123 over 1  times
+number of files: 6 avg run time: 19.636008900008164 over 1  times
+number of files: 7 avg run time: 21.756136400043033 over 1  times
+number of files: 8 avg run time: 23.49757640005555 over 1  times
+number of files: 9 avg run time: 27.70284249994438 over 1  times
+number of files: 10 avg run time: 28.54305839992594 over 1  times
+number of files: 11 avg run time: 30.531963599962182 over 1  times
+number of files: 12 avg run time: 33.63597820000723 over 1  times
+number of files: 13 avg run time: 2.4847147000255063 over 1  times
+number of files: 14 avg run time: 40.26496080006473 over 1  times
+number of files: 15 avg run time: 40.450503100058995 over 1  times
+number of files: 16 avg run time: 42.44136390008498 over 1  times
+number of files: 17 avg run time: 48.51145629992243 over 1  times
+number of files: 18 avg run time: 45.89535510004498 over 1  times
+number of files: 19 avg run time: 48.389498699922115 over 1  times
+number of files: 20 avg run time: 49.67851100000553 over 1  times
+number of files: 21 avg run time: 54.74724109994713 over 1  times
+number of files: 22 avg run time: 54.35037859994918 over 1  times
+number of files: 23 avg run time: 59.677466099965386 over 1  times
+number of files: 24 avg run time: 61.40106919989921 over 1  times
+number of files: 25 avg run time: 65.29989440005738 over 1  times
+
+
+========== run output for 20250327 11:53:21 am ==========
+
+ogma script run times
+
+number of files: 1 | avg run time: 6.828389199916273 over 1  times | files per second 6.828389199916273
+number of files: 2 | avg run time: 9.731632399954833 over 1  times | files per second 4.8658161999774165
+number of files: 3 | avg run time: 12.55082250002306 over 1  times | files per second 4.183607500007686
+number of files: 4 | avg run time: 14.240402999916114 over 1  times | files per second 3.5601007499790285
+number of files: 5 | avg run time: 16.59762810007669 over 1  times | files per second 3.3195256200153382
+number of files: 6 | avg run time: 22.173138500074856 over 1  times | files per second 3.6955230833458095
+number of files: 7 | avg run time: 23.714334800024517 over 1  times | files per second 3.3877621142892167
+number of files: 8 | avg run time: 24.462374900002033 over 1  times | files per second 3.057796862500254
+number of files: 9 | avg run time: 26.864470699918456 over 1  times | files per second 2.9849411888798283
+number of files: 10 | avg run time: 30.18994870001916 over 1  times | files per second 3.018994870001916
+number of files: 11 | avg run time: 31.7363249999471 over 1  times | files per second 2.8851204545406457
+number of files: 12 | avg run time: 34.14643900003284 over 1  times | files per second 2.84553658333607
+number of files: 13 | avg run time: 37.609351100050844 over 1  times | files per second 2.893027007696219
+number of files: 14 | avg run time: 37.675267399987206 over 1  times | files per second 2.691090528570515
+number of files: 15 | avg run time: 40.441048400010914 over 1  times | files per second 2.696069893334061
+number of files: 16 | avg run time: 42.29564310004935 over 1  times | files per second 2.643477693753084
+number of files: 17 | avg run time: 45.76800010004081 over 1  times | files per second 2.6922353000024004
+number of files: 18 | avg run time: 51.257900699973106 over 1  times | files per second 2.847661149998506
+number of files: 19 | avg run time: 48.918787799892016 over 1  times | files per second 2.5746730420995796
+number of files: 20 | avg run time: 54.22741769999266 over 1  times | files per second 2.7113708849996327
+number of files: 21 | avg run time: 56.20354140002746 over 1  times | files per second 2.676359114287022
+number of files: 22 | avg run time: 57.63516549998894 over 1  times | files per second 2.6197802499994975
+number of files: 23 | avg run time: 59.853552200016566 over 1  times | files per second 2.6023283565224595
+number of files: 24 | avg run time: 61.24552510003559 over 1  times | files per second 2.5518968791681496
+number of files: 25 | avg run time: 62.92273820005357 over 1  times | files per second 2.516909528002143
+
+
+========== run output for 20250327 01:38:48 pm ==========
+
+number of files: 1 | avg run time: 0.8496221998939291 over 1  times | files per second 0.8496221998939291
+number of files: 2 | avg run time: 0.7529193001100793 over 1  times | files per second 0.3764596500550397
+number of files: 3 | avg run time: 0.7131694999989122 over 1  times | files per second 0.23772316666630408
+number of files: 4 | avg run time: 0.7476961000356823 over 1  times | files per second 0.18692402500892058
+number of files: 5 | avg run time: 0.6382492000702769 over 1  times | files per second 0.12764984001405538
+number of files: 6 | avg run time: 0.7318868999136612 over 1  times | files per second 0.1219811499856102
+number of files: 7 | avg run time: 0.9119021999649704 over 1  times | files per second 0.13027174285213863
+number of files: 8 | avg run time: 0.6574685999657959 over 1  times | files per second 0.08218357499572448
+number of files: 9 | avg run time: 0.7895889999344945 over 1  times | files per second 0.08773211110383272
+number of files: 10 | avg run time: 0.6597550000296906 over 1  times | files per second 0.06597550000296906
+number of files: 11 | avg run time: 0.6744862999767065 over 1  times | files per second 0.061316936361518776
+number of files: 12 | avg run time: 0.7480732999974862 over 1  times | files per second 0.062339441666457183
+number of files: 13 | avg run time: 0.7011263999156654 over 1  times | files per second 0.05393279999351272
+number of files: 14 | avg run time: 0.7772573999827728 over 1  times | files per second 0.055518385713055195
+number of files: 15 | avg run time: 0.6091424999758601 over 1  times | files per second 0.040609499998390676
+number of files: 16 | avg run time: 0.8546631999779493 over 1  times | files per second 0.05341644999862183
+number of files: 17 | avg run time: 0.6592516000382602 over 1  times | files per second 0.03877950588460354
+number of files: 18 | avg run time: 0.697100100107491 over 1  times | files per second 0.03872778333930506
+number of files: 19 | avg run time: 0.673165199928917 over 1  times | files per second 0.03542974736467984
+number of files: 20 | avg run time: 0.7213601999683306 over 1  times | files per second 0.03606800999841653
+number of files: 21 | avg run time: 0.7629703999264166 over 1  times | files per second 0.036331923806019836
+number of files: 22 | avg run time: 0.6388509999960661 over 1  times | files per second 0.029038681818003006
+number of files: 23 | avg run time: 0.7782629999564961 over 1  times | files per second 0.03383752173723896
+number of files: 24 | avg run time: 0.6704783000750467 over 1  times | files per second 0.02793659583646028
+number of files: 25 | avg run time: 0.6622777000302449 over 1  times | files per second 0.026491108001209795
+
+
+========== run output for 20250327 01:39:51 pm ==========
+
+number of files: 1 | avg run time: 0.7342160999542102 over 1  times | files per second 0.7342160999542102
+number of files: 2 | avg run time: 0.6620651000412181 over 1  times | files per second 0.33103255002060905
+number of files: 3 | avg run time: 0.7894407999701798 over 1  times | files per second 0.2631469333233933
+number of files: 4 | avg run time: 0.9040777001064271 over 1  times | files per second 0.22601942502660677
+number of files: 5 | avg run time: 0.6834255000576377 over 1  times | files per second 0.13668510001152753
+number of files: 6 | avg run time: 0.7083977999864146 over 1  times | files per second 0.11806629999773577
+number of files: 7 | avg run time: 0.620767500018701 over 1  times | files per second 0.088681071431243
+number of files: 8 | avg run time: 0.7121275999816135 over 1  times | files per second 0.08901594999770168
+number of files: 9 | avg run time: 0.6588590999599546 over 1  times | files per second 0.07320656666221718
+number of files: 10 | avg run time: 0.8834820000920445 over 1  times | files per second 0.08834820000920444
+number of files: 11 | avg run time: 0.8398811999941245 over 1  times | files per second 0.07635283636310222
+number of files: 12 | avg run time: 0.8713888000929728 over 1  times | files per second 0.07261573334108107
+number of files: 13 | avg run time: 0.8362495000474155 over 1  times | files per second 0.06432688461903197
+number of files: 14 | avg run time: 0.8484209000598639 over 1  times | files per second 0.06060149286141885
+number of files: 15 | avg run time: 0.6966793000465259 over 1  times | files per second 0.046445286669768396
+number of files: 16 | avg run time: 0.9082789999665692 over 1  times | files per second 0.05676743749791058
+number of files: 17 | avg run time: 0.6742738999892026 over 1  times | files per second 0.039663170587600154
+number of files: 18 | avg run time: 0.7546263000695035 over 1  times | files per second 0.04192368333719464
+number of files: 19 | avg run time: 0.742389899911359 over 1  times | files per second 0.03907315262691363
+number of files: 20 | avg run time: 0.6369685000972822 over 1  times | files per second 0.03184842500486411
+number of files: 21 | avg run time: 0.6832008000928909 over 1  times | files per second 0.032533371432994805
+number of files: 22 | avg run time: 0.6696451000170782 over 1  times | files per second 0.030438413637139918
+number of files: 23 | avg run time: 0.8653092000167817 over 1  times | files per second 0.03762213913116442
+number of files: 24 | avg run time: 0.6915898000588641 over 1  times | files per second 0.028816241669119336
+number of files: 25 | avg run time: 0.7333689000224695 over 1  times | files per second 0.029334756000898778
