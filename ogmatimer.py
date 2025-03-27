@@ -52,6 +52,7 @@ def ogma_run(run_files: list[str] | str, times: int) -> float:
     #     print(f"Error: {e}")
     # finally:
     #     return time
+    return time
 
 
 # MARK: TEST RUNNER
@@ -77,7 +78,7 @@ def test_runner() -> None:
         print(r"{" + f"{formatted_datetime}" + r"}" + f" runing {i} files")
         time: float = 0.0
         if FILES[:i]:
-            times = 10
+            times = 1
             time = ogma_run(run_files=FILES[:i], times=times)
             info: list[str | int | float] = ["number of files:", i, "avg run time:", time, "over", times, " times"]
             data.append(info)
