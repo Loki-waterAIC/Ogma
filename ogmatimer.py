@@ -40,18 +40,18 @@ def ogma_run(run_files: list[str] | str, times: int) -> float:
         number=times,
     )
 
-    # remove/Delete the file
-    try:
-        os.remove(json_path)
-        print(f"{json_path} has been deleted successfully.")
-    except FileNotFoundError:
-        print(f"{json_path} does not exist.")
-    except PermissionError:
-        print(f"Permission denied: unable to delete {json_path}.")
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        return time
+    # # remove/Delete the file
+    # try:
+    #     os.remove(json_path)
+    #     print(f"{json_path} has been deleted successfully.")
+    # except FileNotFoundError:
+    #     print(f"{json_path} does not exist.")
+    # except PermissionError:
+    #     print(f"Permission denied: unable to delete {json_path}.")
+    # except Exception as e:
+    #     print(f"Error: {e}")
+    # finally:
+    #     return time
 
 
 # MARK: TEST RUNNER
