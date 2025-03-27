@@ -33,4 +33,4 @@ def ogma_run(run_files: list[str] | str) -> None:
 
 
 if __name__ == "__main__":
-    ogma_run(run_files=FILES[0])
+    ogma_run(run_files=FILES[:2])
