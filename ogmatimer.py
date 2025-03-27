@@ -16,15 +16,15 @@ from data.hidden.files import FILES, OGMA_PYTHON_LOCATION, OGMA_PYTHON_SCRIPT_LO
 
 
 # MARK: RUNNER
-def ogma_run(run_files: list[str] | str, times:int) -> float:
+def ogma_run(run_files: list[str] | str, times: int) -> float:
     # make values
     values: tuple[list[str], dict[str, str]] = OTV.modify_word_properties(file_paths=run_files)
     files: list[str] = values[0]
     props: dict[str, str] = values[1]
-    
+
     # now
     now: dt = dt.now()  # separate line to insure nothing breaks
-    formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M:%S %p").lower()
+    formatted_datetime: str = now.strftime(r"%Y%m%d %I.%M.%S %p").lower()
 
     # make json
     data: dict[str, dict[str, str] | list[str]] = {"files": files, "doc_properties": props}
@@ -67,15 +67,15 @@ def test_runner() -> None:
     data: list[list[str | int | float]] = list()
 
     # run tests
-    print(f"running {len(FILES)} tests")
+    print(("=" * 10) + f" running {len(FILES)} tests " + ("=" * 10))
     for i in range(len(FILES)):
         # now
         now: dt = dt.now()  # separate line to insure nothing breaks
         formatted_datetime: str = now.strftime(r"%Y%m%d %I:%M:%S %p").lower()
-        
+
         # run test
-        print(f"{formatted_datetime} runing {i} files")
-        time:float = 0.0
+        print(r"{" + f"{formatted_datetime}" + r"}" + f" runing {i} files")
+        time: float = 0.0
         if FILES[:i]:
             times = 10
             time = ogma_run(run_files=FILES[:i], times=times)
@@ -96,6 +96,7 @@ def test_runner() -> None:
 
     print(break_string)
     print(o_str)
+
 
 if __name__ == "__main__":
     test_runner()
