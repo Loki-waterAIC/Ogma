@@ -75,11 +75,18 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
 
             # Quit the Word application if it was started
             if word:
-                # https://learn.microsoft.com/en-us/office/vba/api/word.application.quit(method)
-                word.Quit(SaveChanges=False) # if could not save and close file from before, assume an error has occured and close everything without saving
-                word = None # Sending word to garbage collector.
-                # not using del here becuase it causes a crash in the system.
-                # let it close gracefully
+                try:
+                    # https://learn.microsoft.com/en-us/office/vba/api/word.application.quit(method)
+                    word.Quit(SaveChanges=False) # if could not save and close file from before, assume an error has occured and close everything without saving
+                except:
+                    try:
+                        word.Quit() # just quit
+                    except:
+                        pass # com objects are stupid and I give up. Parsing the XML would have been easier at this point.... 
+                finally:
+                    word = None # Sending word to garbage collector.
+                    # not using del here becuase it causes a crash in the system.
+                    # let it close "gracefully"
 
         try:
             # 2
@@ -120,9 +127,14 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
                                 doc.Save()
                                 doc.Close(SaveChanges=True)
                             except:
+                                try:
+                                    doc.Close()
+                                except:
+                                    pass
                                 # if can't save, assume it is closed
                                 pass
-                            doc = None  # prevent duplication
+                            finally:
+                                doc = None  # prevent duplication
 
 
             else:
@@ -152,7 +164,8 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
                         except:
                             # if can't save, assume it is closed
                             pass
-                        doc = None  # prevent duplication
+                        finally:
+                            doc = None  # prevent duplication
 
         except AttributeError as e:
             # 3
