@@ -191,5 +191,5 @@ data/hidden/*
 tmp/ogma_lock.lock
 tmp\ogma_lock.lock
 **/data.json
-**/data(.*).json
+**/data(*).json
 tmp.json
