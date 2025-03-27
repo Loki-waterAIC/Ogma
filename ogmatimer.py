@@ -83,3 +83,6 @@ def test_runner() -> None:
 
     print(break_string)
     print(o_str)
+
+if __name__ == "__main__":
+    test_runner()
