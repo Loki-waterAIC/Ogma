@@ -12,7 +12,7 @@
 
 # TODO
 # Package Ogma
-# Time Ogma
+# Time Ogma - [ ] packaged, [ ] python script
 #   1 file v 10 files
 # make script (base off test script) to increment the number of files it takes to run from 1 to len(FILES)
 # gather time inbetween and show AJ and BEN
