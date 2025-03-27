@@ -57,8 +57,9 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
     lock = filelock.FileLock(LOCK_FILE_PATH)
 
     with lock:        
-        path_violation_list: list[str] = list()
-        validated_doc_paths: list[str] = doc_paths
+        path_violation_list: list[str] = list() # may use later, for now just stubbing for later code
+        validated_doc_paths: list[str] = [i for i in doc_paths if i]
+        validated_macro_name:list[str] = [i for i in macro_names if i]
         
         # 1
         word: CDispatch | None = None
@@ -105,8 +106,9 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
                         doc: Any = word.Documents.Open(path)
 
                         # run macro # https://learn.microsoft.com/en-us/office/vba/api/word.application.run
-                        for name in macro_names:
-                            word.Application.Run(name)
+                        for name in validated_macro_name:
+                            if name:
+                                word.Application.Run(name)
                     except:
                         # mute errors and run next file
                         pass
@@ -136,8 +138,9 @@ def run_word_macro_on_files(doc_paths: list[str], macro_names: list[str], templa
                         pass
 
                 # run macro # https://learn.microsoft.com/en-us/office/vba/api/word.application.run
-                for name in macro_names:
-                    word.Application.Run(name)
+                for name in validated_macro_name:
+                    if name:
+                        word.Application.Run(name)
 
                 # Save/close the document if it was opened
                 for doc in doc_list:
