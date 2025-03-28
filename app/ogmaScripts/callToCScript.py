@@ -57,6 +57,8 @@ def __docx_to_pdf_vbs_path() -> str:
 def docx_to_pdf(doc_paths: list[str], retry: int = 0) -> None:
     # recurse end
     if retry > 3:
+        if doc_paths:
+            raise cscriptError(f"[callToCScript.docx_to_pdf] cscriptError occured with:\n{doc_paths}")
         return
 
     retry_list: list[str] = []
