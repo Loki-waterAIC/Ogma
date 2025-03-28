@@ -110,6 +110,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
     errors:list[Exception] = []
     no_success = True
     for _try in range(3):
+        print(f"update properties attempt {_try}")
         try:
             # callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
             callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths,export_pdf=export_pdf)
