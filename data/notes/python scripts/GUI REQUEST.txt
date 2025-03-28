@@ -1,0 +1,14 @@
+Add folder Add
+    given a folder, find all child docx files and add to list
+    [x] add "Select Parent Folder" button
+        [x] walk dir and grab docx files
+        [ ] test new button
+    [ ] add text input for the doc properties.
+
+Export to pdf
+    export in the location of the file docx file
+    [ ] Add export pdf option to runWordMacroWin
+        [ ] Find the export com object command to export the file
+    [ ] Make a checkmark to export pdf, default on.
+    [ ] add the option for the user to export comments or not.
+        [ ] add toggle button for comments, default off.

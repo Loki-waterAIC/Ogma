@@ -100,28 +100,43 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
             e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
     except Exception as e:
         # error can occure if a a document is open.
-        err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
-        print(err_message)
-        raise Exception(err_message)
+        _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
+        print(_err_message)
+        raise Exception(_err_message)
 
 
     # set the values
-    try:
-        callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
-    except AttributeError as e:
-        print(e)
-        raise e
-    except cscriptError as e:
-        raise cscriptError(f"[documentPropertyUpdateTool.document_properity_update_tool 1] CScript Error occured:\n{e}")
-    except Exception as e:
-        raise Exception(f"[documentPropertyUpdateTool.document_properity_update_tool 2] Generic Error occured:\n{e}")
+    # try range because word is stupid and trying again can help
+    errors:list[Exception] = []
+    no_success = True
+    for _try in range(3):
+        try:
+            # callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
+            callToCScript.update_doc_properties(doc_paths=validated_doc_paths)
+            no_success = False
+            break
+        except Exception as e:
+            errors.append(e)
+    
+    if no_success:
+        loop_err_message:str = ""
+        for e in errors:
+            if isinstance(e,AttributeError):
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] AttributeError occured:\n{e}"
+            elif isinstance(e,cscriptError):
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
+            elif isinstance(e,Exception):
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 2] Exception occured:\n{e}"
+                
+        if loop_err_message:
+            print(loop_err_message)
+            raise Exception(loop_err_message)
 
     if path_violation_list:
-
-        err_message: str = ""
-        err_message += "[documentPropertyUpdateTool.document_properity_update_tool 3] Invalid Files:"
+        _err_message: str = ""
+        _err_message += "[documentPropertyUpdateTool.document_properity_update_tool 3] Invalid Files:"
         for invalid_path in path_violation_list:
-            err_message += f"\n{str(invalid_path)}"
-        print(err_message)
-        raise OSError(err_message)
+            _err_message += f"\n\t{str(invalid_path)}"
+        print(_err_message)
+        raise OSError(_err_message)
     return
