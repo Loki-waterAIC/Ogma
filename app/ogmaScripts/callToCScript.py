@@ -18,6 +18,8 @@
 
 import os
 import sys
+import subprocess
+import filelock
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -25,12 +27,14 @@ if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 import app.ogmaScripts.runWordMacroWin as runWordMacroWin
+from app.ogmaScripts.cscriptErrors import cscriptError
+from app.ogmaGlobal import LOCK_FILE_PATH
 
 # True if Should word be visible; False if word should not be visible
 WORDVISIBLITY = False
 
 
-def template_path_func() -> str:
+def __template_path_func() -> str:
     abs_path: str = os.path.abspath(".")
     dir_path: str = os.path.join(abs_path, "app")
     dir_path: str = os.path.join(dir_path, "documentTemplateMacros")
@@ -38,6 +42,40 @@ def template_path_func() -> str:
     if not os.path.exists(path=dir_path):
         raise OSError(f"[callToCScript.template_path_func] Template Path Does not Exist!\n\t>>> {dir_path}")
     return dir_path
+
+
+def __docx_to_pdf_vbs_path() -> str:
+    abs_path: str = os.path.abspath(".")
+    dir_path: str = os.path.join(abs_path, "app")
+    dir_path: str = os.path.join(dir_path, "vbScripts")
+    dir_path: str = os.path.join(dir_path, "docxToPdf.vbs")
+    if not os.path.exists(path=dir_path):
+        raise OSError(f"[callToCScript.template_path_func] Template Path Does not Exist!\n\t>>> {dir_path}")
+    return dir_path
+
+
+def docx_to_pdf(doc_paths: list[str], retry: int = 0) -> None:
+    # recurse end
+    if retry > 3:
+        return
+
+    retry_list: list[str] = []
+    for input_docx in doc_paths:
+        output_pdf: str = input_docx.removesuffix(r".docx") + r".pdf"
+        output_pdf: str = os.path.normpath(os.path.abspath(output_pdf))
+        vbs_script: str = __docx_to_pdf_vbs_path()
+
+        lock = filelock.FileLock(LOCK_FILE_PATH)
+        with lock:
+            try:
+                # Run the VBS script with input/output arguments
+                subprocess.run(["cscript", vbs_script, input_docx, output_pdf], shell=True)
+            except:
+                retry_list.append(input_docx)
+
+    # too lazy to not recurse
+    if retry_list:
+        docx_to_pdf(retry_list, retry=retry + 1)
 
 
 def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) -> None:
@@ -50,7 +88,7 @@ def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) 
 
     # set the macro
     macro: str = r"ogmaMacroAllFiles"
-    template_path: str = template_path_func()
+    template_path: str = __template_path_func()
     wordVisible: bool = WORDVISIBLITY
 
     runWordMacroWin.run_word_macro_on_files(
@@ -59,8 +97,9 @@ def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) 
         template_path=template_path,
         activeDocumentMacro=False,
         wordVisible=wordVisible,
-        export_pdf=export_pdf,
     )
+    if export_pdf:
+        docx_to_pdf(doc_paths=doc_paths)
     return
 
 
@@ -74,7 +113,7 @@ def update_doc_properties(doc_paths: list[str], export_pdf: bool = False) -> Non
 
     # set the macro
     macro: str = r"ogmaMacro"
-    template_path: str = template_path_func()
+    template_path: str = __template_path_func()
     wordVisible: bool = WORDVISIBLITY
 
     runWordMacroWin.run_word_macro_on_files(
@@ -83,9 +122,9 @@ def update_doc_properties(doc_paths: list[str], export_pdf: bool = False) -> Non
         template_path=template_path,
         activeDocumentMacro=True,
         wordVisible=wordVisible,
-        export_pdf=export_pdf,
     )
-
+    if export_pdf:
+        docx_to_pdf(doc_paths=doc_paths)
     return
 
 
@@ -96,4 +135,5 @@ if __name__ == "__main__":
     file: str | list[str] = FILES[0]  # making it so it works both single and multiple file tests
     if isinstance(file, str):
         file = [file]
-    update_doc_properties(doc_paths=file)
+    # update_doc_properties(doc_paths=file)
+    docx_to_pdf(file)

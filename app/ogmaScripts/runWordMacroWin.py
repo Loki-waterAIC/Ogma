@@ -39,7 +39,6 @@ def run_word_macro_on_files(
     template_path: str | None,
     activeDocumentMacro: bool,
     wordVisible: bool = False,
-    export_pdf: bool = False,
 ) -> None:
     """
     Runs a specified macro in a Word document.
@@ -103,18 +102,10 @@ def run_word_macro_on_files(
                 """
                 sub_func_cleanup_doc_0p9s8bgsp3 cleans up the doc if it was opened
                 """
-                nonlocal word, export_pdf
+                nonlocal word
                 
                 # close doc if was opened
                 if inner_doc and word:
-                    # try exporting to pdf
-                    if export_pdf:
-                        try:
-                            # https://learn.microsoft.com/en-us/office/vba/api/Word.SaveAs2
-                            # https://learn.microsoft.com/en-us/office/vba/api/word.wdsaveformat
-                            inner_doc.SaveAs2(FileFormat=17)
-                        except:
-                            pass
                     try:
                         # https://learn.microsoft.com/en-us/office/vba/api/word.documents
                         inner_doc.Save()
@@ -236,5 +227,4 @@ if __name__ == "__main__":
         macro_names=["ogmaMacro"],
         activeDocumentMacro=True,
         wordVisible=True,
-        export_pdf=True
     )
