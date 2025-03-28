@@ -15,6 +15,7 @@ FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*
 TITLE_NAME = "File Processor"
 
 
+# MARK: RUNNER
 # Wrapper function to run scripts and show a GUI message
 def run_scripts_gui(file_paths: list[str]) -> None:
     # Show the selected files and ask for confirmation
@@ -36,6 +37,7 @@ def run_scripts_gui(file_paths: list[str]) -> None:
 
 # Main application class
 class GUIApp:
+    # MARK: GUI
     def __init__(self, root):
         self.root = root
         self.root.title(TITLE_NAME)
@@ -95,6 +97,7 @@ class GUIApp:
         root.grid_columnconfigure(0, weight=1)
         root.grid_columnconfigure(1, weight=1)
 
+    # MARK: GUI LOGIC
     def select_files(self):
         # Open file dialog to select .insv files
         filetypes = FILE_TYPES
