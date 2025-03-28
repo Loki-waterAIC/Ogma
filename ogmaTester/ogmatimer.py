@@ -27,12 +27,14 @@ def ogma_run(run_files: list[str] | str, times: int) -> float:
     formatted_datetime: str = now.strftime(r"%Y%m%d %I.%M.%S %p").lower()
 
     # make json
-    data: dict[str, str | list[str] | bool] = {
-        "dotm_path": r"app\documentTemplateMacros\ogma.dotm",
-        "macroName": ["ogmaMacro"],
-        "singleFileMacro": True,
-        "filePaths": run_files,
-    }
+    data: dict[str, dict[str, str] | list[str]] = {"files": files, "doc_properties": props}
+
+    # data: dict[str, str | list[str] | bool] = {
+    #     "dotm_path": r"app\documentTemplateMacros\ogma.dotm",
+    #     "macroName": ["ogmaMacro"],
+    #     "singleFileMacro": True,
+    #     "filePaths": run_files,
+    # }
 
     abs_path: str = os.path.abspath(".")
     json_path: str = os.path.join(abs_path, "ogmaTester")
