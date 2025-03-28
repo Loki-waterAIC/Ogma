@@ -20,11 +20,12 @@ TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"
 def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool) -> None:
     confirmation = messagebox.askyesno(
         title="Confirm Files",
-        message=f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
+        # message=f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
+        message=f"Are you sure you want to run scripts for the selected following files?",
     )
     if confirmation:
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
-        messagebox.showinfo("Finished", f"Finished running scripts for files: {file_paths}")
+        messagebox.showinfo("Finished", f"Finished running scripts on the selected files.")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
 
@@ -141,52 +142,94 @@ class GUIApp:
         self.print = self.print_checkbox_var.get()
 
     def select_files(self):
-        filetypes = FILE_TYPES
-        selected_files = filedialog.askopenfilenames(title="Select files", filetypes=filetypes)
+        # Open file dialog to select .insv files
+        filetypes: list[tuple[str, str]] = FILE_TYPES
+        selected_files: tuple[str, ...] | str = filedialog.askopenfilenames(title="Select files", filetypes=filetypes)
+
+        # Add selected files to the list and update the text box
         for file_path in selected_files:
             if file_path not in self.file_paths:
+                file_path = os.path.normpath(file_path)
                 self.file_paths.append(file_path)
                 self.add_file_to_text_box(file_path)
 
-    def select_parent_folder(self):
-        parent_folder = filedialog.askdirectory(title="Select parent folder", mustexist=True)
-        for root, _, files in os.walk(parent_folder):
+    def select_parent_folder(self) -> None:
+        # Open file dialog to select folder
+        parent_folder: str = filedialog.askdirectory(title="Select parent folder to find .docx files in.", mustexist=True)
+
+        # Find correct files to add to file list
+        # https://docs.python.org/3/library/os.html#os.walk
+        # For dirs in path
+        for root, dirs, files in os.walk(top=parent_folder, topdown=True):
+            # For file in cur dir
             for file in files:
+                # if filename ext is docx
                 if file.endswith(".docx"):
-                    file_path = os.path.join(root, file)
+                    # get file path
+                    file_path: str = os.path.join(root, file)
+                    file_path = os.path.normpath(file_path)
+                    # add path to file list if not already there
                     if file_path not in self.file_paths:
                         self.file_paths.append(file_path)
                         self.add_file_to_text_box(file_path)
 
-    def add_file_to_text_box(self, file_path):
+    def add_file_to_text_box(self, file_path) -> None:
+        # Create a checkbox and label for the file path
         var = tk.BooleanVar(value=True)
-        checkbox = tk.Checkbutton(self.scrollable_frame, variable=var, bg="white")
-        label = tk.Label(self.scrollable_frame, text=file_path, anchor="w", bg="white")
+        checkbox = tk.Checkbutton(self.scrollable_frame, variable=var, bg="white")  # Set background to white
+        label = tk.Label(self.scrollable_frame, text=file_path, anchor="w", bg="white")  # Set background to white
+
+        # Store the checkbox and its variable
         self.checkboxes.append((var, checkbox, label))
+
+        # Add to the scrollable frame
         checkbox.grid(row=len(self.checkboxes) - 1, column=0, sticky="w")
         label.grid(row=len(self.checkboxes) - 1, column=1, sticky="w")
 
-    def toggle_all(self):
+    def toggle_all(self) -> None:
+        # Toggle all checkboxes
         if not self.checkboxes:
             return
-        new_state = not self.checkboxes[0][0].get()
-        for var, _, _ in self.checkboxes:
+
+        # Determine the new state based on the first checkbox
+        new_state: bool = not self.checkboxes[0][0].get()
+
+        for var, checkbox, label in self.checkboxes:
             var.set(new_state)
 
-    def remove_files(self):
-        self.file_paths = [fp for i, fp in enumerate(self.file_paths) if not self.checkboxes[i][0].get()]
-        self.checkboxes = [cb for cb in self.checkboxes if not cb[0].get()]
+    def remove_files(self) -> None:
+        # Remove all checked files
+        remaining_files:list[str] = []
+        remaining_checkboxes:list[tuple[tk.BooleanVar,tk.Checkbutton,tk.Label]] = []
 
-    def run_all(self):
-        selected_files = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
+        for i, (var, checkbox, label) in enumerate(self.checkboxes):
+            if not var.get():
+                remaining_files.append(self.file_paths[i])
+                remaining_checkboxes.append((var, checkbox, label))
+
+        # Update the file paths and checkboxes
+        self.file_paths = remaining_files
+        self.checkboxes = remaining_checkboxes
+
+        # Clear the scrollable frame and re-add the remaining files
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+
+        for var, checkbox, label in self.checkboxes:
+            checkbox.grid(row=len(self.checkboxes), column=0, sticky="w")
+            label.grid(row=len(self.checkboxes), column=1, sticky="w")
+
+    def run_all(self) -> None:
+        # Get the selected file paths and pass them to the run_scripts_gui function
+        selected_files: list[str] = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(
-                file_paths=selected_files, properties={k: v.get() for k, v in self.properties.items()}, print=self.print
+                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items()}, print=self.print
             )
         else:
-            messagebox.showwarning("No Files Selected", "Please select at least one file to run.")
+            messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
 
-    def on_mouse_wheel(self, event: tk.Event) -> None:
+    def on_mouse_wheel(self, event:tk.Event) -> None:
         # Handle vertical scrolling
         if event.delta:  # Windows and macOS
             self.canvas.yview_scroll(-1 * (event.delta // 120), "units")
@@ -195,7 +238,7 @@ class GUIApp:
         elif event.num == 5:  # Linux (down)
             self.canvas.yview_scroll(1, "units")
 
-    def on_horizontal_mouse_wheel(self, event: tk.Event) -> None:
+    def on_horizontal_mouse_wheel(self, event:tk.Event) -> None:
         # Handle horizontal scrolling
         if event.delta:  # Windows and macOS
             self.canvas.xview_scroll(-1 * (event.delta // 120), "units")
