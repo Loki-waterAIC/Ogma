@@ -3,6 +3,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 import os, sys
+import copy
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -16,7 +17,7 @@ TITLE_NAME = "OGMA Doc Property Update Tool"
 
 
 # Wrapper function to run scripts and show a GUI message
-def run_scripts_gui(file_paths: list[str]) -> None:
+def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool) -> None:
     # Show the selected files and ask for confirmation
     confirmation = messagebox.askyesno(
         title="Confirm Files",
@@ -42,42 +43,53 @@ class GUIApp:
         self.root.geometry("600x400")
 
         # List to store file paths and their associated checkboxes
-        self.file_paths = []
-        self.checkboxes = []
+        self.file_paths: list[str] = []
+        self.checkboxes: list[tuple[tk.BooleanVar, tk.Checkbutton, tk.Label]] = []
+        box_col_span: int = 0
 
-        # Top buttons
-        self.select_button = tk.Button(root, text="Select docx files", command=self.select_files)
-        self.select_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
+        # NOTE:
+        # [!] dicitonary to place user input fields to
+        self.properties: dict[str, str] = {}
 
-        self.select_button = tk.Button(root, text="Select parent folder", command=self.select_parent_folder)
-        self.select_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+        # NOTE:
+        # [!] checkbox print value
+        self.print: bool = True
 
+        # Top buttons Row 0
+        # Toggle All button Top West
         self.toggle_all_button = tk.Button(root, text="Toggle all", command=self.toggle_all)
         self.toggle_all_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        box_col_span += 1
+        # Select Folder Top East
+        self.select_button = tk.Button(root, text="Select parent folder", command=self.select_parent_folder)
+        self.select_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+        box_col_span += 1
+        # Select Docx Files Top East
+        self.select_button = tk.Button(root, text="Select docx files", command=self.select_files)
+        self.select_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
+        box_col_span += 1
 
+        # Selection Box Ceneter Row 1
         # Text box with scrollbars
         self.text_box_frame = tk.Frame(root)
-        self.text_box_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
-
+        self.text_box_frame.grid(row=1, column=0, columnspan=box_col_span, padx=10, pady=10, sticky="nsew")
         # Canvas and scrollbars
         self.canvas = tk.Canvas(self.text_box_frame, bg="white")
         self.h_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="horizontal", command=self.canvas.xview)
         self.v_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, bg="white")  # Set background to white
-
+        # Scroll Bars
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
         )
-
+        # Make canvas
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(xscrollcommand=self.h_scrollbar.set, yscrollcommand=self.v_scrollbar.set)
-
         # Pack scrollbars and canvas
         self.h_scrollbar.pack(side="bottom", fill="x")
         self.v_scrollbar.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
-
         # Bind mouse wheel events to the canvas for both horizontal and vertical scrolling
         self.canvas.bind_all("<MouseWheel>", self.on_mouse_wheel)  # Vertical scrolling (Windows/macOS)
         self.canvas.bind_all("<Shift-MouseWheel>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Windows/macOS)
@@ -86,16 +98,33 @@ class GUIApp:
         self.canvas.bind_all("<Shift-Button-4>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, left)
         self.canvas.bind_all("<Shift-Button-5>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, right)
 
-        # Bottom buttons
+        # Bottom buttons Row 2
+        # Remove Button Bottom West col 0
         self.remove_button = tk.Button(root, text="Remove", command=self.remove_files)
         self.remove_button.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-
-        self.run_button = tk.Button(root, text="Run all", command=self.run_all)
-        self.run_button.grid(row=2, column=1, padx=10, pady=10, sticky="e")
-
+        # PDF Toggle Bottom East col 1
         # TODO:
-        # [ ] pdf export toggle, default enabled
-        # [ ] pdf comment toggle, default off
+        # [ ] checkbox tied to self.print; title="export to pdf", row=2, column=1, padx=10, pady=10, sticky="e"
+        # Run Button Bottom East col 2
+        self.run_button = tk.Button(root, text="Run all", command=self.run_all)
+        self.run_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
+
+        # User Input Rows 3 to 13, col 0
+        # TODO:
+        # [ ] for the following code region, tie the inputs to self.properties,
+        #       the titles will be the keys and the user input will be the values
+        #       for the dictionary self.properties
+        # [ ] user text input; title = "BOK ID", row=3, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Document Name", row=4, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Company Name", row=5, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Division", row=6, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Author", row=7, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Company Address", row=8, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Project Name", row=9, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Project Number", row=10, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "End Customer", row=11, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "Site Name", row=12, column=0, padx=10, pady=10, sticky="W"
+        # [ ] user text input; title = "File Name", row=13, column=0, padx=10, pady=10, sticky="W"
 
         # Configure grid weights
         root.grid_rowconfigure(1, weight=1)
@@ -182,9 +211,9 @@ class GUIApp:
         # Get the selected file paths and pass them to the run_scripts_gui function
         selected_files = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
-            run_scripts_gui(selected_files)
+            run_scripts_gui(file_paths=selected_files, properties=copy.deepcopy(self.properties), print=self.print)
         else:
-            messagebox.showwarning("No Files Selected", "Please select at least one file to run.")
+            messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
 
     def on_mouse_wheel(self, event):
         # Handle vertical scrolling
