@@ -2,8 +2,14 @@ import threading
 import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
+import os, sys
 
-from ogmaTester.ogmafunctest import run_scripts as run_scripts # Edit the <>'s
+# project path
+OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if OGMA_PATH not in sys.path:
+    sys.path.append(OGMA_PATH)
+
+from ogmaTester.ogmafunctest import run_scripts as run_scripts  # Edit the <>'s
 
 FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*;")]
 TITLE_NAME = "File Processor"
@@ -40,7 +46,7 @@ class GUIApp:
         self.checkboxes = []
 
         # Top buttons
-        self.select_button = tk.Button(root, text="Select files", command=self.select_files)
+        self.select_button = tk.Button(root, text="Select docx files", command=self.select_files)
         self.select_button.grid(row=0, column=1, padx=10, pady=10, sticky="e")
 
         self.toggle_all_button = tk.Button(root, text="Toggle all", command=self.toggle_all)
