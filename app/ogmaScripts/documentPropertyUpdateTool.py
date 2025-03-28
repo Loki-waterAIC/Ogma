@@ -5,12 +5,12 @@
  # @ Create Time: 2025-03-25 11:39:16
  # @ Modified by: Aaron Shackelford
  # @ Modified time: 2025-03-26 13:10:08
- # @ Description: 
- 
+ # @ Description:
+
  This file contains the document property update tool for Ogma
- 
+
  It takes in request and processes them to send to Word via the callToCScript subroutine
- 
+
  '''
 
 import os
@@ -24,14 +24,14 @@ import docx.document
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
-    
+
 import app.ogmaScripts.callToCScript as callToCScript
 from app.ogmaScripts.cscriptErrors import cscriptError
 
 
 def __helper_update_properties(doc_path: str, properties: dict) -> None:
     '''
-    __helper_update_properties updates the default values of a property in a document's properties. 
+    __helper_update_properties updates the default values of a property in a document's properties.
 
     Args:
         doc_path (str): document path
@@ -117,7 +117,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
             break
         except Exception as e:
             errors.append(e)
-    
+
     if no_success:
         loop_err_message:str = ""
         for e in errors:
@@ -127,7 +127,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
                 loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
             elif isinstance(e,Exception):
                 loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 2] Exception occured:\n{e}"
-                
+
         if loop_err_message:
             print(loop_err_message)
             raise Exception(loop_err_message)
