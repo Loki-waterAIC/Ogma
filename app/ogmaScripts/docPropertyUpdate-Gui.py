@@ -31,11 +31,11 @@ def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bo
 
 # Main application class
 class GUIApp:
-    def __init__(self, root:tk.Tk):
+    def __init__(self, root: tk.Tk):
         self.root: tk.Tk = root
         self.root.title(string=TITLE_NAME)
         self.root.geometry(newGeometry="600x800")
-        self.root.minsize(width=400,height=720)
+        self.root.minsize(width=400, height=720)
 
         self.file_paths: list[str] = []
         self.checkboxes: list[tuple[tk.BooleanVar, tk.Checkbutton, tk.Label]] = []
@@ -53,17 +53,33 @@ class GUIApp:
         self.select_button.grid(row=0, column=2, padx=10, pady=10, sticky="e")
 
         # MARK: Text Box - File Frame
-        self.tb_frame = tk.Frame(root)
-        self.tb_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
-        self.text_box_canvas = tk.Canvas(self.tb_frame, bg="white")
-        self.h_scrollbar = ttk.Scrollbar(self.tb_frame, orient="horizontal", command=self.text_box_canvas.xview)
-        self.v_scrollbar = ttk.Scrollbar(self.tb_frame, orient="vertical", command=self.text_box_canvas.yview)
-        self.scrollable_frame = tk.Frame(self.text_box_canvas, bg="white")
-        self.text_box_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.text_box_canvas.configure(xscrollcommand=self.h_scrollbar.set, yscrollcommand=self.v_scrollbar.set)
+        # Text box with scrollbars
+        self.text_box_frame = tk.Frame(root)
+        self.text_box_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+        # Canvas and scrollbars
+        self.canvas = tk.Canvas(self.text_box_frame, bg="white")
+        self.h_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="horizontal", command=self.canvas.xview)
+        self.v_scrollbar = ttk.Scrollbar(self.text_box_frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = tk.Frame(self.canvas, bg="white")  # Set background to white
+        # Scroll Bars
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+        )
+        # Make canvas
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(xscrollcommand=self.h_scrollbar.set, yscrollcommand=self.v_scrollbar.set)
+        # Pack scrollbars and canvas
         self.h_scrollbar.pack(side="bottom", fill="x")
         self.v_scrollbar.pack(side="right", fill="y")
-        self.text_box_canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.pack(side="left", fill="both", expand=True)
+        # Bind mouse wheel events to the canvas for both horizontal and vertical scrolling
+        self.canvas.bind_all("<MouseWheel>", self.on_mouse_wheel)  # Vertical scrolling (Windows/macOS)
+        self.canvas.bind_all("<Shift-MouseWheel>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Windows/macOS)
+        self.canvas.bind_all("<Button-4>", self.on_mouse_wheel)  # Vertical scrolling (Linux, up)
+        self.canvas.bind_all("<Button-5>", self.on_mouse_wheel)  # Vertical scrolling (Linux, down)
+        self.canvas.bind_all("<Shift-Button-4>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, left)
+        self.canvas.bind_all("<Shift-Button-5>", self.on_horizontal_mouse_wheel)  # Horizontal scrolling (Linux, right)
 
         # MARK: Bottom buttons
         self.remove_button = tk.Button(root, text="Remove", command=self.remove_files)
@@ -78,46 +94,47 @@ class GUIApp:
         self.run_button = tk.Button(root, text="Run all", command=self.run_all)
         self.run_button.grid(row=2, column=2, padx=10, pady=10, sticky="e")
 
+        # MARK: bottom padding
+        row_max = 3
+        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+
         # MARK: User input
         # User Input Fields
         input_titles: list[str] = [
-            "BOK ID",
-            "Document Name",
-            "Company Name",
-            "Division",
-            "Author",
+            "         BOK ID",
+            "  Document Name",
+            "   Company Name",
+            "       Division",
+            "         Author",
             "Company Address",
-            "Project Name",
-            "Project Number",
-            "End Customer",
-            "Site Name",
-            "File Name",
+            "   Project Name",
+            " Project Number",
+            "   End Customer",
+            "      Site Name",
+            "      File Name",
         ]
+
         # User Input - bottom text section
-        self.ui_frame = tk.Frame(root)
-        self.ui_frame.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
-        self.ui_canvas = tk.Canvas(self.ui_frame, bg="white")
-        self.ui_h_scrollbar = ttk.Scrollbar(self.ui_frame, orient="horizontal", command=self.ui_canvas.xview)
-        self.ui_v_scrollbar = ttk.Scrollbar(self.ui_frame, orient="vertical", command=self.ui_canvas.yview)
-        self.ui_scroll_frame = tk.Frame(self.ui_canvas, bg="white")
-        self.ui_canvas.create_window((0, 0), window=self.ui_scroll_frame, anchor="nw")
-        self.ui_canvas.configure(xscrollcommand=self.ui_h_scrollbar.set, yscrollcommand=self.ui_v_scrollbar.set)
-        self.ui_h_scrollbar.pack(side="bottom", fill="x")
-        self.ui_v_scrollbar.pack(side="right", fill="y")
-        self.ui_canvas.pack(side="left", fill="both", expand=True)
-        # fill out canvas
-        for i, title in enumerate(input_titles):
-            self.user_input = tk.Frame(self.ui_scroll_frame)
-            self.user_input.grid(row=i, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+        for i, title in enumerate(input_titles, start=4):
+            self.user_input = tk.Frame(root)
+            self.user_input.grid(row=i, column=0, padx=10, pady=2, sticky="w", columnspan=3)
 
-            tk.Label(self.user_input, text=title).grid(row=0, column=0, padx=10, pady=5, sticky="w")
-            entry = tk.Entry(master=self.user_input)
-            entry.grid(row=0, column=1, padx=10, pady=5, sticky="w", columnspan=2)
+            tk.Label(master=self.user_input, text=title, width=len(title), anchor="e").grid(
+                row=0, column=0, padx=10, pady=5, sticky="e"
+            )
+            entry = tk.Entry(master=self.user_input, justify="left", width=55)
+            entry.grid(row=0, column=1, padx=0, pady=5, sticky="we", columnspan=2)
+            entry.grid_columnconfigure(index=0, weight=2)
             self.properties.update({title: entry})
+            row_max = i
 
-        root.grid_rowconfigure(1, weight=1)
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_columnconfigure(1, weight=1)
+        # MARK: bottom padding
+        row_max += 1
+        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+
+        root.grid_rowconfigure(index=1, weight=1)
+        root.grid_columnconfigure(index=0, weight=1)
+        root.grid_columnconfigure(index=1, weight=1)
 
     # MARK: Logic
     def toggle_print(self):
@@ -168,6 +185,24 @@ class GUIApp:
             )
         else:
             messagebox.showwarning("No Files Selected", "Please select at least one file to run.")
+
+    def on_mouse_wheel(self, event: tk.Event) -> None:
+        # Handle vertical scrolling
+        if event.delta:  # Windows and macOS
+            self.canvas.yview_scroll(-1 * (event.delta // 120), "units")
+        elif event.num == 4:  # Linux (up)
+            self.canvas.yview_scroll(-1, "units")
+        elif event.num == 5:  # Linux (down)
+            self.canvas.yview_scroll(1, "units")
+
+    def on_horizontal_mouse_wheel(self, event: tk.Event) -> None:
+        # Handle horizontal scrolling
+        if event.delta:  # Windows and macOS
+            self.canvas.xview_scroll(-1 * (event.delta // 120), "units")
+        elif event.num == 4:  # Linux (left)
+            self.canvas.xview_scroll(-1, "units")
+        elif event.num == 5:  # Linux (right)
+            self.canvas.xview_scroll(1, "units")
 
 
 if __name__ == "__main__":
