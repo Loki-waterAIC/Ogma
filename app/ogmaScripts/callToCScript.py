@@ -71,7 +71,7 @@ def docx_to_pdf(doc_paths: list[str], retry: int = 0) -> None:
         with lock:
             try:
                 # Run the VBS script with input/output arguments
-                subprocess.run(["cscript", vbs_script, input_docx, output_pdf], shell=True)
+                subprocess.run(["cscript", "/nologo", vbs_script, input_docx, output_pdf], shell=True)
             except:
                 retry_list.append(input_docx)
 
