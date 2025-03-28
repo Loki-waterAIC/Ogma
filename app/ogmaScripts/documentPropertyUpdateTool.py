@@ -56,7 +56,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
 
 
 # MARK: START READING HERE
-def document_properity_update_tool(doc_paths: list[str], properties: dict) -> None:
+def document_properity_update_tool(doc_paths: list[str], properties: dict, export_pdf:bool=False) -> None:
     """
     Set custom document properties in a Word document.
 
@@ -112,7 +112,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict) -> No
     for _try in range(3):
         try:
             # callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
-            callToCScript.update_doc_properties(doc_paths=validated_doc_paths)
+            callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths,export_pdf=export_pdf)
             no_success = False
             break
         except Exception as e:

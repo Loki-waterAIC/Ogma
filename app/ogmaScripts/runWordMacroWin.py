@@ -39,6 +39,7 @@ def run_word_macro_on_files(
     template_path: str | None,
     activeDocumentMacro: bool,
     wordVisible: bool = False,
+    export_pdf: bool = False,
 ) -> None:
     """
     Runs a specified macro in a Word document.
@@ -74,9 +75,9 @@ def run_word_macro_on_files(
             # Initialize the COM library for threading
             pythoncom.CoInitialize()
 
-            def sub_func_cleanup_0p9s8bgsp3() -> None:
+            def sub_func_cleanup_word_0p9s8bgsp3() -> None:
                 """
-                sub_func_cleanup_0p9s8bgsp3 cleans up the doc and word file if it was opened
+                sub_func_cleanup_word_0p9s8bgsp3 cleans up word
                 """
                 # 4/6
                 nonlocal word
@@ -97,6 +98,32 @@ def run_word_macro_on_files(
                         word = None  # Sending word to garbage collector.
                         # not using del here becuase it causes a crash in the system.
                         # let it close "gracefully"
+                        
+            def sub_func_cleanup_doc_0p9s8bgsp3(inner_doc:Any) -> None:
+                """
+                sub_func_cleanup_doc_0p9s8bgsp3 cleans up the doc if it was opened
+                """
+                nonlocal word
+                
+                # close doc if was opened
+                if inner_doc and word:
+                    # try exporting to pdf
+                    try:
+                        inner_doc.SaveAs2(FileFormat=word.WdSaveFormat.wdFormatPDF)
+                    except:
+                        pass
+                    try:
+                        # https://learn.microsoft.com/en-us/office/vba/api/word.documents
+                        inner_doc.Save()
+                        inner_doc.Close(SaveChanges=word.wdsaveoptions.wdSaveChanges)
+                    except:
+                        try:
+                            inner_doc.Close()
+                        except:
+                            # if can't save, assume it is closed
+                            pass
+                    finally:
+                        inner_doc = None  # prevent duplication
 
             try:
                 # 2
@@ -131,20 +158,7 @@ def run_word_macro_on_files(
                             pass
                         finally:
                             # close doc if was opened
-                            if doc:
-                                try:
-                                    # https://learn.microsoft.com/en-us/office/vba/api/word.documents
-                                    doc.Save()
-                                    doc.Close(SaveChanges=True)
-                                except:
-                                    try:
-                                        doc.Close()
-                                    except:
-                                        pass
-                                    # if can't save, assume it is closed
-                                    pass
-                                finally:
-                                    doc = None  # prevent duplication
+                            sub_func_cleanup_doc_0p9s8bgsp3(inner_doc=doc)
 
                 else:
                     # run all files at once
@@ -165,23 +179,15 @@ def run_word_macro_on_files(
 
                     # Save/close the document if it was opened
                     for doc in doc_list:
-                        if doc:
-                            try:
-                                # https://learn.microsoft.com/en-us/office/vba/api/word.documents
-                                doc.Save()
-                                doc.Close(SaveChanges=True)
-                            except:
-                                # if can't save, assume it is closed
-                                pass
-                            finally:
-                                doc = None  # prevent duplication
+                        # close doc if was opened
+                        sub_func_cleanup_doc_0p9s8bgsp3(inner_doc=doc)
 
             except AttributeError as e:
                 # 3
                 err_message = f'[runWordMacroWin.run_word_macro_on_files 0] AttributeError Occured in one of the files in: "{doc_paths}":\n\tCouldn\'t run Macro "{macro_names}"\n\t[COM] Error: >>> {e}'
                 print(err_message)
                 # 4
-                sub_func_cleanup_0p9s8bgsp3()
+                sub_func_cleanup_word_0p9s8bgsp3()
                 raise AttributeError(err_message)
             except Exception as e:
                 # 3
@@ -190,12 +196,12 @@ def run_word_macro_on_files(
                 )
                 print(err_message)
                 # 4
-                sub_func_cleanup_0p9s8bgsp3()
+                sub_func_cleanup_word_0p9s8bgsp3()
                 raise Exception(err_message)
             finally:
                 # 3/5
                 # 4/6
-                sub_func_cleanup_0p9s8bgsp3()
+                sub_func_cleanup_word_0p9s8bgsp3()
                 # Uninitialize the COM library for this thread
                 pythoncom.CoUninitialize()
 

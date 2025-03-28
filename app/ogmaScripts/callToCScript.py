@@ -40,7 +40,7 @@ def template_path_func() -> str:
     return dir_path
 
 
-def update_doc_properties_multi(doc_paths: list[str]) -> None:
+def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) -> None:
     """
     update_doc_properties runs the "UpdateDocumentProperties" macro on the word files at the given path at the same time
 
@@ -52,19 +52,19 @@ def update_doc_properties_multi(doc_paths: list[str]) -> None:
     macro: str = r"ogmaMacroAllFiles"
     template_path: str = template_path_func()
     wordVisible: bool = WORDVISIBLITY
-    
-    
+
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
         macro_names=[macro],
         template_path=template_path,
         activeDocumentMacro=False,
         wordVisible=wordVisible,
+        export_pdf=export_pdf,
     )
     return
 
 
-def update_doc_properties(doc_paths: list[str]) -> None:
+def update_doc_properties(doc_paths: list[str], export_pdf: bool = False) -> None:
     """
     update_doc_properties runs the "UpdateDocumentProperties" macro on the word file at the given path
 
@@ -77,13 +77,13 @@ def update_doc_properties(doc_paths: list[str]) -> None:
     template_path: str = template_path_func()
     wordVisible: bool = WORDVISIBLITY
 
-
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
         macro_names=[macro],
         template_path=template_path,
         activeDocumentMacro=True,
         wordVisible=wordVisible,
+        export_pdf=export_pdf,
     )
 
     return
