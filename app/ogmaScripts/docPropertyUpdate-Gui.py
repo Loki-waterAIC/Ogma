@@ -17,14 +17,20 @@ TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"
 
 
 # Wrapper function to run scripts and show a GUI message
-def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool) -> None:
+def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool, app: tk.Tk | None = None) -> None:
     confirmation = messagebox.askyesno(
         title="Confirm Files",
         # message=f"Are you sure you want to run scripts for the following files?\n\n{', '.join(file_paths)}",
         message=f"Are you sure you want to run scripts for the selected following files?",
     )
     if confirmation:
+        t = ""
+        if app:
+            t = app.title()
+            app.title(t + " ... processing files, please do not touch")
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
+        if app:
+            app.title(t)
         messagebox.showinfo("Finished", f"Finished running scripts on the selected files.")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
@@ -199,8 +205,8 @@ class GUIApp:
 
     def remove_files(self) -> None:
         # Remove all checked files
-        remaining_files:list[str] = []
-        remaining_checkboxes:list[tuple[tk.BooleanVar,tk.Checkbutton,tk.Label]] = []
+        remaining_files: list[str] = []
+        remaining_checkboxes: list[tuple[tk.BooleanVar, tk.Checkbutton, tk.Label]] = []
 
         for i, (var, checkbox, label) in enumerate(self.checkboxes):
             if not var.get():
@@ -224,12 +230,12 @@ class GUIApp:
         selected_files: list[str] = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(
-                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items()}, print=self.print
+                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items()}, print=self.print, app=self.root
             )
         else:
             messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
 
-    def on_mouse_wheel(self, event:tk.Event) -> None:
+    def on_mouse_wheel(self, event: tk.Event) -> None:
         # Handle vertical scrolling
         if event.delta:  # Windows and macOS
             self.canvas.yview_scroll(-1 * (event.delta // 120), "units")
@@ -238,7 +244,7 @@ class GUIApp:
         elif event.num == 5:  # Linux (down)
             self.canvas.yview_scroll(1, "units")
 
-    def on_horizontal_mouse_wheel(self, event:tk.Event) -> None:
+    def on_horizontal_mouse_wheel(self, event: tk.Event) -> None:
         # Handle horizontal scrolling
         if event.delta:  # Windows and macOS
             self.canvas.xview_scroll(-1 * (event.delta // 120), "units")

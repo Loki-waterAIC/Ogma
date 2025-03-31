@@ -95,10 +95,12 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
 
     # update the values
     try:
-        # for each path, update properties in a unique thread
-        with ThreadPoolExecutor(max_workers=1) as e:
-        # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-            e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
+        # # for each path, update properties in a unique thread
+        # with ThreadPoolExecutor(max_workers=1) as e:
+        # # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
+        #     e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
+        for doc_path in validated_doc_paths:
+            __helper_update_properties(doc_path=doc_path,properties=properties)
     except Exception as e:
         # error can occure if a a document is open.
         _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
