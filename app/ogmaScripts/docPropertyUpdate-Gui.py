@@ -108,12 +108,12 @@ class GUIApp:
         # MARK: User input
         # User Input Fields
         input_titles: list[str] = [
-            "         BOK ID",
-            "  Document Name",
-            "   Company Name",
-            "       Division",
+            # "         BOK ID",
+            # "  Document Name",
+            # "   Company Name",
+            # "       Division",
             "         Author",
-            "Company Address",
+            # "Company Address",
             "   Project Name",
             " Project Number",
             "   End Customer",
