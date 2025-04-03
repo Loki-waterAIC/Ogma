@@ -258,8 +258,10 @@ class GUIApp:
         elif event.num == 5:  # Linux (right)
             self.canvas.xview_scroll(1, "units")
 
-
-if __name__ == "__main__":
+def run_gui() -> None:
     root = tk.Tk()
     app = GUIApp(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    run_gui()
