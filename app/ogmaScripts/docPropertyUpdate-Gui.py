@@ -103,17 +103,19 @@ class GUIApp:
 
         # MARK: bottom padding
         row_max = 3
-        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+        tk.Label(master=self.root, text="Any Doc Prop left blank will be ignored", justify="left").grid(
+            row=row_max, column=0, padx=10, pady=10, sticky="w", columnspan=3
+        )
 
         # MARK: User input
         # User Input Fields
         input_titles: list[str] = [
-            # "         BOK ID",
-            # "  Document Name",
-            # "   Company Name",
-            # "       Division",
+            "         BOK ID",
+            "  Document Name",
+            "   Company Name",
+            "       Division",
             "         Author",
-            # "Company Address",
+            "Company Address",
             "   Project Name",
             " Project Number",
             "   End Customer",
@@ -137,7 +139,7 @@ class GUIApp:
 
         # MARK: bottom padding
         row_max += 1
-        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+        tk.Label(master=self.root, text="").grid(row=row_max, column=0, padx=0, pady=0, sticky="w")
 
         root.grid_rowconfigure(index=1, weight=1)
         root.grid_columnconfigure(index=0, weight=1)
@@ -230,7 +232,10 @@ class GUIApp:
         selected_files: list[str] = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(
-                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items() if (v.get().strip())}, print=self.print, app=self.root
+                file_paths=selected_files,
+                properties={k.strip(): v.get() for k, v in self.properties.items() if (v.get().strip())},
+                print=self.print,
+                app=self.root,
             )
         else:
             messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
