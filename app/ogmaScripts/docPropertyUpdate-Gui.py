@@ -24,13 +24,13 @@ def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bo
         message=f"Are you sure you want to run scripts for the selected following files?",
     )
     if confirmation:
-        t = ""
+        original_title = ""
         if app:
-            t = app.title()
-            app.title(t + " ... processing files, please do not touch")
+            original_title: str = app.title()
+            app.title(string=original_title + " ... processing files, please do not touch")
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
         if app:
-            app.title(t)
+            app.title(string=original_title)
         messagebox.showinfo("Finished", f"Finished running scripts on the selected files.")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
@@ -230,7 +230,7 @@ class GUIApp:
         selected_files: list[str] = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(
-                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items()}, print=self.print, app=self.root
+                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items() if (v.get().strip())}, print=self.print, app=self.root
             )
         else:
             messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
