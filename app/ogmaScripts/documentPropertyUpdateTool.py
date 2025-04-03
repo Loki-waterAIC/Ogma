@@ -1,17 +1,17 @@
 #!/usr/bin/env python3.11.11
 # -*- coding: utf-8 -*-
-'''
- # @ Author: Aaron Shackelford
- # @ Create Time: 2025-03-25 11:39:16
- # @ Modified by: Aaron Shackelford
- # @ Modified time: 2025-03-26 13:10:08
- # @ Description:
+"""
+# @ Author: Aaron Shackelford
+# @ Create Time: 2025-03-25 11:39:16
+# @ Modified by: Aaron Shackelford
+# @ Modified time: 2025-03-26 13:10:08
+# @ Description:
 
- This file contains the document property update tool for Ogma
+This file contains the document property update tool for Ogma
 
- It takes in request and processes them to send to Word via the callToCScript subroutine
+It takes in request and processes them to send to Word via the callToCScript subroutine
 
- '''
+"""
 
 import os
 import sys
@@ -28,35 +28,8 @@ if OGMA_PATH not in sys.path:
 import app.ogmaScripts.callToCScript as callToCScript
 from app.ogmaScripts.cscriptErrors import cscriptError
 
-
-def __helper_update_properties(doc_path: str, properties: dict) -> None:
-    '''
-    __helper_update_properties updates the default values of a property in a document's properties.
-
-    Args:
-        doc_path (str): document path
-        properties (dict): dictionary of properties to update. `{"property name" : "property value"}`
-
-    Raises:
-        Exception: docx documents have locks, if a document is locked, it can not be updated.
-    '''
-    try:
-        # try to open the document
-        document: docx.document.Document = docx.Document(docx=doc_path)
-    except Exception as e:
-        # document was not found or locked.
-        err_message: str = f"[documentPropertyUpdateTool.__helper_update_properties] Exception: can't open ({doc_path})\n\tError >>> {e}"
-        print(err_message)
-        raise Exception(err_message)
-
-    for k in properties:
-        document.custom_properties[k] = properties[k]
-
-    document.save(path_or_stream=doc_path)
-
-
 # MARK: START READING HERE
-def document_properity_update_tool(doc_paths: list[str], properties: dict, export_pdf:bool=False) -> None:
+def document_properity_update_tool(doc_paths: list[str], properties: dict, export_pdf: bool = False) -> None:
     """
     Set custom document properties in a Word document.
 
@@ -95,50 +68,44 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
 
     # update the values
     # try range because word is stupid and trying again can help
-    doc_prop_errors:list[Exception] = []
-    no_success = True
-    t_valid_paths: list[str] = validated_doc_paths.copy()
-    
-    for doc_path in t_valid_paths:
-        try:
-            __helper_update_properties(doc_path=doc_path,properties=properties)
-        except Exception as e:
-            # error can occure if a a document is open.
-            doc_prop_errors.append(e)
-            validated_doc_paths.remove(doc_path)
-            path_violation_list.append(doc_path)            
+    try:
+        # __helper_update_properties(doc_path=doc_path,properties=properties)
+        callToCScript.set_doc_properties_multi(doc_paths=validated_doc_paths, properties=properties)
+    except Exception as e:
+        # error can occure if a a document is open.
+        _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
 
     # set the values
     # try range because word is stupid and trying again can help
-    errors:list[Exception] = []
+    errors: list[Exception] = []
     no_success = True
     for _try in range(3):
         print(f"update properties attempt {_try}")
         try:
             # callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths)
-            callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths,export_pdf=export_pdf)
+            callToCScript.update_doc_properties_multi(doc_paths=validated_doc_paths, export_pdf=export_pdf)
             no_success = False
             break
         except Exception as e:
             errors.append(e)
 
     if no_success:
-        loop_err_message:str = ""
+        loop_err_message: str = ""
         for e in errors:
-            if isinstance(e,AttributeError):
-                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] AttributeError occured:\n{e}"
-            elif isinstance(e,cscriptError):
-                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
-            elif isinstance(e,Exception):
+            if isinstance(e, AttributeError):
+                loop_err_message += (
+                    f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] AttributeError occured:\n{e}"
+                )
+            elif isinstance(e, cscriptError):
+                loop_err_message += (
+                    f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
+                )
+            elif isinstance(e, Exception):
                 loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 2] Exception occured:\n{e}"
 
         if loop_err_message:
             print(loop_err_message)
             raise Exception(loop_err_message)
-
-    if doc_prop_errors:
-        for e in doc_prop_errors:
-            _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
 
     if path_violation_list:
         _err_message: str = ""

@@ -22,13 +22,14 @@ import subprocess
 import filelock
 
 # project path
-OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",".."))
+OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
 import app.ogmaScripts.runWordMacroWin as runWordMacroWin
 from app.ogmaScripts.cscriptErrors import cscriptError
 from app.ogmaGlobal import LOCK_FILE_PATH
+from app.ogmaScripts.setWordValues import run_set_values
 
 # True if Should word be visible; False if word should not be visible
 WORDVISIBLITY = False
@@ -78,6 +79,24 @@ def docx_to_pdf(doc_paths: list[str], retry: int = 0) -> None:
     # too lazy to not recurse
     if retry_list:
         docx_to_pdf(retry_list, retry=retry + 1)
+
+
+def set_doc_properties_multi(doc_paths: list[str], properties: dict[str, str]) -> None:
+    """
+    sets the document properties values
+
+    Args:
+        doc_paths (list[str]): _description_
+        properties (dict[str,str]): _description_
+    """
+    wordVisible: bool = WORDVISIBLITY
+
+    run_set_values(
+        doc_paths=doc_paths,
+        properties=properties,
+        wordVisible=wordVisible,
+    )
+    
 
 
 def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) -> None:
