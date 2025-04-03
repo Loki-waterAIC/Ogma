@@ -3,7 +3,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 import os, sys
-import copy
+import time
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -45,6 +45,7 @@ def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bo
             original_title: str = app.title()
             app.title(string=original_title + " ... processing files, please do not touch")
             disable_widgets(root=app)
+            time.sleep(1)
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
         if app:
             enable_widgets(root=app)
