@@ -160,8 +160,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("--verbose", "-v", dest="verbose", action="store_true", help="Increase output verbosity")
     parser.add_argument(
-        "--version", "--v", dest="version", action="version", version="%(prog)s " f"version {ogmaGlobal.APP_VERSION}"
-    )  # FIX: FIX THE FORMATTING HERE TO MAKE IT RETURN A VERSION!!
+        "--version", "--v", "-V", dest="version", action="version", version="%(prog)s " f"version {ogmaGlobal.APP_VERSION}"
+    )
+    
+    
     # parse inputs
     args: argparse.Namespace = parser.parse_args()
 
