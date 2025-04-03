@@ -28,6 +28,31 @@ if OGMA_PATH not in sys.path:
 import app.ogmaScripts.callToCScript as callToCScript
 from app.ogmaScripts.cscriptErrors import cscriptError
 
+def __helper_update_properties(doc_path: str, properties: dict) -> None:
+    '''
+    __helper_update_properties updates the default values of a property in a document's properties.
+
+    Args:
+        doc_path (str): document path
+        properties (dict): dictionary of properties to update. `{"property name" : "property value"}`
+
+    Raises:
+        Exception: docx documents have locks, if a document is locked, it can not be updated.
+    '''
+    try:
+        # try to open the document
+        document: docx.document.Document = docx.Document(docx=doc_path)
+    except Exception as e:
+        # document was not found or locked.
+        err_message: str = f"[documentPropertyUpdateTool.__helper_update_properties] Exception: can't open ({doc_path})\n\tError >>> {e}"
+        print(err_message)
+        raise Exception(err_message)
+
+    for k in properties:
+        document.custom_properties[k] = properties[k]
+
+    document.save(path_or_stream=doc_path)
+
 # MARK: START READING HERE
 def document_properity_update_tool(doc_paths: list[str], properties: dict, export_pdf: bool = False) -> None:
     """
@@ -73,8 +98,8 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
     for _try in range(3):
         print(f"set properties attempt {_try}")
         try:
-            # __helper_update_properties(doc_path=doc_path,properties=properties)
-            callToCScript.set_doc_properties_multi(doc_paths=validated_doc_paths, properties=properties)
+            __helper_update_properties(doc_path=doc_path,properties=properties)
+            # callToCScript.set_doc_properties_multi(doc_paths=validated_doc_paths, properties=properties)
             no_success = False
             break
         except Exception as e:
