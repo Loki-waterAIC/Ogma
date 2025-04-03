@@ -3,7 +3,7 @@ import tkinter as tk
 from concurrent.futures import Future, ThreadPoolExecutor
 from tkinter import filedialog, messagebox, ttk
 import os, sys
-import copy
+import time
 
 # project path
 OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -16,6 +16,22 @@ FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*
 TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"
 
 
+def disable_widgets(root: tk.Tk) -> None:
+    for widget in root.winfo_children():
+        try:
+            widget.configure(state="disabled")
+        except:
+            pass
+
+
+def enable_widgets(root: tk.Tk) -> None:
+    for widget in root.winfo_children():
+        try:
+            widget.configure(state="normal")
+        except:
+            pass
+
+
 # Wrapper function to run scripts and show a GUI message
 def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool, app: tk.Tk | None = None) -> None:
     confirmation = messagebox.askyesno(
@@ -24,13 +40,16 @@ def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bo
         message=f"Are you sure you want to run scripts for the selected following files?",
     )
     if confirmation:
-        t = ""
+        original_title = ""
         if app:
-            t = app.title()
-            app.title(t + " ... processing files, please do not touch")
+            original_title: str = app.title()
+            app.title(string=original_title + " ... processing files, please do not touch")
+            disable_widgets(root=app)
+            time.sleep(1)
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
         if app:
-            app.title(t)
+            enable_widgets(root=app)
+            app.title(string=original_title)
         messagebox.showinfo("Finished", f"Finished running scripts on the selected files.")
     else:
         messagebox.showinfo("Cancelled", "Script execution was cancelled.")
@@ -103,17 +122,19 @@ class GUIApp:
 
         # MARK: bottom padding
         row_max = 3
-        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+        tk.Label(master=self.root, text="Any Doc Prop left blank will be ignored", justify="left").grid(
+            row=row_max, column=0, padx=10, pady=10, sticky="w", columnspan=3
+        )
 
         # MARK: User input
         # User Input Fields
         input_titles: list[str] = [
-            # "         BOK ID",
-            # "  Document Name",
-            # "   Company Name",
-            # "       Division",
+            "         BOK ID",
+            "  Document Name",
+            "   Company Name",
+            "       Division",
             "         Author",
-            # "Company Address",
+            "Company Address",
             "   Project Name",
             " Project Number",
             "   End Customer",
@@ -137,7 +158,7 @@ class GUIApp:
 
         # MARK: bottom padding
         row_max += 1
-        tk.Label(self.root, text="").grid(row=row_max, column=0, padx=10, pady=0, sticky="w")
+        tk.Label(master=self.root, text="").grid(row=row_max, column=0, padx=0, pady=0, sticky="w")
 
         root.grid_rowconfigure(index=1, weight=1)
         root.grid_columnconfigure(index=0, weight=1)
@@ -230,7 +251,10 @@ class GUIApp:
         selected_files: list[str] = [self.file_paths[i] for i, (var, _, _) in enumerate(self.checkboxes) if var.get()]
         if selected_files:
             run_scripts_gui(
-                file_paths=selected_files, properties={k.strip(): v.get() for k, v in self.properties.items()}, print=self.print, app=self.root
+                file_paths=selected_files,
+                properties={k.strip(): v.get() for k, v in self.properties.items() if (v.get().strip())},
+                print=self.print,
+                app=self.root,
             )
         else:
             messagebox.showwarning(title="No Files Selected", message="Please select at least one file to run.")
@@ -254,7 +278,11 @@ class GUIApp:
             self.canvas.xview_scroll(1, "units")
 
 
-if __name__ == "__main__":
+def run_gui() -> None:
     root = tk.Tk()
     app = GUIApp(root)
     root.mainloop()
+
+
+if __name__ == "__main__":
+    run_gui()
