@@ -68,12 +68,37 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
 
     # update the values
     # try range because word is stupid and trying again can help
-    try:
-        # __helper_update_properties(doc_path=doc_path,properties=properties)
-        callToCScript.set_doc_properties_multi(doc_paths=validated_doc_paths, properties=properties)
-    except Exception as e:
-        # error can occure if a a document is open.
-        _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
+    set_props_errors:list[str] = []
+    no_success = True
+    for _try in range(3):
+        print(f"set properties attempt {_try}")
+        try:
+            # __helper_update_properties(doc_path=doc_path,properties=properties)
+            callToCScript.set_doc_properties_multi(doc_paths=validated_doc_paths, properties=properties)
+            no_success = False
+            break
+        except Exception as e:
+            # error can occure if a a document is open.
+            _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool_set_data 0] Exception: {e}"
+            set_props_errors.append(_err_message)
+            
+    if no_success:
+        loop_err_message: str = ""
+        for e in set_props_errors:
+            if isinstance(e, AttributeError):
+                loop_err_message += (
+                    f"\n[documentPropertyUpdateTool.document_properity_update_tool_set_data 1] AttributeError occured:\n{e}"
+                )
+            elif isinstance(e, cscriptError):
+                loop_err_message += (
+                    f"\n[documentPropertyUpdateTool.document_properity_update_tool_set_data 3] cscriptError occured:\n{e}"
+                )
+            elif isinstance(e, Exception):
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool_set_data 2] Exception occured:\n{e}"
+
+        if loop_err_message:
+            print(loop_err_message)
+            raise Exception(loop_err_message)
 
     # set the values
     # try range because word is stupid and trying again can help
@@ -98,7 +123,7 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
                 )
             elif isinstance(e, cscriptError):
                 loop_err_message += (
-                    f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
+                    f"\n[documentPropertyUpdateTool.document_properity_update_tool 3] cscriptError occured:\n{e}"
                 )
             elif isinstance(e, Exception):
                 loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 2] Exception occured:\n{e}"

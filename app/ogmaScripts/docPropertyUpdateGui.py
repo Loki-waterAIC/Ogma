@@ -16,6 +16,22 @@ FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*
 TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"
 
 
+def disable_widgets(root: tk.Tk) -> None:
+    for widget in root.winfo_children():
+        try:
+            widget.configure(state="disabled")
+        except:
+            pass
+
+
+def enable_widgets(root: tk.Tk) -> None:
+    for widget in root.winfo_children():
+        try:
+            widget.configure(state="normal")
+        except:
+            pass
+
+
 # Wrapper function to run scripts and show a GUI message
 def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bool, app: tk.Tk | None = None) -> None:
     confirmation = messagebox.askyesno(
@@ -28,8 +44,10 @@ def run_scripts_gui(file_paths: list[str], properties: dict[str, str], print: bo
         if app:
             original_title: str = app.title()
             app.title(string=original_title + " ... processing files, please do not touch")
+            disable_widgets(root=app)
         run_scripts(doc_paths=file_paths, properties=properties, export_pdf=print)
         if app:
+            enable_widgets(root=app)
             app.title(string=original_title)
         messagebox.showinfo("Finished", f"Finished running scripts on the selected files.")
     else:
@@ -258,10 +276,12 @@ class GUIApp:
         elif event.num == 5:  # Linux (right)
             self.canvas.xview_scroll(1, "units")
 
+
 def run_gui() -> None:
     root = tk.Tk()
     app = GUIApp(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     run_gui()

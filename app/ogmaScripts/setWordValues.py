@@ -140,7 +140,7 @@ def run_set_values(
                                 # link to content: If the property is tied to a word object, like a paragraph, a table, section, image, text box, etc
                                 # type 4, string | 1: msoPropertyTypeNumber (Numeric) 2: msoPropertyTypeBoolean (Boolean) 3: msoPropertyTypeDate (Date) 4: msoPropertyTypeString (String)
                                 # value to set the property to
-                                doc.CustomDocumentProperties.Add(Name=str(key), LinkToContent=False, Type=4, Value=str(val))
+                                doc.CustomDocumentProperties(str(key)).value = str(val)
                             except:
                                 # mute errors and run next property
                                 pass
