@@ -94,19 +94,19 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
             path_violation_list.append(path)
 
     # update the values
-    try:
-        # # for each path, update properties in a unique thread
-        # with ThreadPoolExecutor(max_workers=1) as e:
-        # # with ThreadPoolExecutor(max_workers=1 if __debug__ else None) as e:
-        #     e.map(lambda x: __helper_update_properties(doc_path=x, properties=properties), validated_doc_paths)
-        for doc_path in validated_doc_paths:
+    # try range because word is stupid and trying again can help
+    doc_prop_errors:list[Exception] = []
+    no_success = True
+    t_valid_paths: list[str] = validated_doc_paths.copy()
+    
+    for doc_path in t_valid_paths:
+        try:
             __helper_update_properties(doc_path=doc_path,properties=properties)
-    except Exception as e:
-        # error can occure if a a document is open.
-        _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
-        print(_err_message)
-        raise Exception(_err_message)
-
+        except Exception as e:
+            # error can occure if a a document is open.
+            doc_prop_errors.append(e)
+            validated_doc_paths.remove(doc_path)
+            path_violation_list.append(doc_path)            
 
     # set the values
     # try range because word is stupid and trying again can help
@@ -135,6 +135,10 @@ def document_properity_update_tool(doc_paths: list[str], properties: dict, expor
         if loop_err_message:
             print(loop_err_message)
             raise Exception(loop_err_message)
+
+    if doc_prop_errors:
+        for e in doc_prop_errors:
+            _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
 
     if path_violation_list:
         _err_message: str = ""
