@@ -11,7 +11,7 @@ if OGMA_PATH not in sys.path:
 from data.hidden.files import XML_FILES
 
 # Parse an XML file
-tree: ET.ElementTree = ET.parse(source=XML_FILES[0])
+tree: ET.ElementTree[ET.Element] = ET.parse(source=XML_FILES[0])
 root: ET.Element | Any = tree.getroot()
 
 INTXBXCONT = 2
@@ -38,7 +38,7 @@ def traverse_tree(
     # if all elements in marks is true
     if all(marks):
         # assume they have values
-        docprop: str = str(els[DOCPROP].text) 
+        docprop: str = str(els[DOCPROP].text)
         text: str = str(els[TEXT].text)
         print(docprop + " " + text)
         return

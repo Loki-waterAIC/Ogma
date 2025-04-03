@@ -12,7 +12,7 @@ from data.hidden.files import XML_FILES
 
 
 # Parse an XML file
-tree: ET.ElementTree = ET.parse(source=XML_FILES[0])
+tree: ET.ElementTree[ET.Element] = ET.parse(source=XML_FILES[0])
 root: ET.Element | Any = tree.getroot()
 
 
