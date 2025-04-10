@@ -30,7 +30,7 @@ if OGMA_PATH not in sys.path:
 import app.ogmaGlobal as ogmaGlobal
 import app.ogmaScripts.runWordMacroWin as runWordMacroWin
 from app.ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
-
+from app.ogmaScripts.docPropertyUpdateGui import run_gui
 
 def run_json_list(json_paths: list[str]):
     for path in json_paths:
@@ -159,9 +159,12 @@ if __name__ == "__main__":
         help="Path(s) to the JSON file to instruct ogma on what to do.",
     )
     parser.add_argument("--verbose", "-v", dest="verbose", action="store_true", help="Increase output verbosity")
+    parser.add_argument("--gui", "-g", dest="gui", action="store_true", help="launches document property update gui")
     parser.add_argument(
-        "--version", "--v", dest="version", action="version", version="%(prog)s " f"version {ogmaGlobal.APP_VERSION}"
-    )  # FIX: FIX THE FORMATTING HERE TO MAKE IT RETURN A VERSION!!
+        "--version", "--v", "-V", dest="version", action="version", version="%(prog)s " f"version {ogmaGlobal.APP_VERSION}"
+    )
+    
+    
     # parse inputs
     args: argparse.Namespace = parser.parse_args()
 
@@ -174,3 +177,6 @@ if __name__ == "__main__":
 
     if args.jsonPaths:
         run_json_list(json_paths=args.jsonPaths)
+        
+    if args.gui:
+        run_gui()
