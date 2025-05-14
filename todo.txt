@@ -1,0 +1,4 @@
+
+[ ] Hotpatch idea:
+     Go into the macro existing in the normal.dotm and modify it to have a check box.
+     The check box should modify if it runs on the active document or on all open documents.
