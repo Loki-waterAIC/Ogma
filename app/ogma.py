@@ -7,7 +7,7 @@
 # @ Modified time: 2025-03-12 13:19:19
 # @ Description:
 
- Ogma is a program that edits a word documents' propery values
+ Ogma is a program that edits a word documents' property values
 """
 
 # TODO
@@ -15,7 +15,7 @@
 # Time Ogma - [ ] packaged, [ ] python script
 #   1 file v 10 files
 # make script (base off test script) to increment the number of files it takes to run from 1 to len(FILES)
-# gather time inbetween and show AJ and BEN
+# gather time in-between and show AJ and BEN
 
 import argparse
 import json
@@ -29,7 +29,7 @@ if OGMA_PATH not in sys.path:
 
 import app.ogmaGlobal as ogmaGlobal
 import app.ogmaScripts.runWordMacroWin as runWordMacroWin
-from app.ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool
+from app.ogmaScripts.documentPropertyUpdateTool import document_property_update_tool
 from app.ogmaScripts.docPropertyUpdateGui import run_gui
 
 def run_json_list(json_paths: list[str]):
@@ -94,7 +94,7 @@ def run_json(json_path: str) -> None:
                 if files and doc_props:
                     # run doc property update tool
                     # [ ] should we validate the data?
-                    document_properity_update_tool(doc_paths=files, properties=doc_props)
+                    document_property_update_tool(doc_paths=files, properties=doc_props)
 
             # if dotm_paths[0] to files[3] in data
             if all([(i in data) for i in ["dotm_path", "macros", "singleFileMacro", "files"]]):

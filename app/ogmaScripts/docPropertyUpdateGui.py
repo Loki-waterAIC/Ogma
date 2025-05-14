@@ -10,7 +10,7 @@ OGMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if OGMA_PATH not in sys.path:
     sys.path.append(OGMA_PATH)
 
-from app.ogmaScripts.documentPropertyUpdateTool import document_properity_update_tool as run_scripts
+from app.ogmaScripts.documentPropertyUpdateTool import document_property_update_tool as run_scripts
 
 FILE_TYPES: list[tuple[str, str]] = [("Docx files", "*.docx;"), ("All files", "*;")]
 TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"

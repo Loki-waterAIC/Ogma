@@ -56,7 +56,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
 
 
 # MARK: START READING HERE
-def document_properity_update_tool(doc_paths: list[str], properties: dict, export_pdf:bool=False) -> None:
+def document_property_update_tool(doc_paths: list[str], properties: dict, export_pdf:bool=False) -> None:
     """
     Set custom document properties in a Word document.
 
