@@ -19,7 +19,7 @@ TITLE_NAME = "OGMA Mass Doc Property Update Tool GUI"
 def disable_widgets(root: tk.Tk) -> None:
     for widget in root.winfo_children():
         try:
-            widget.configure(state="disabled")
+            widget.configure(state="disabled")  # type: ignore
         except:
             pass
 
@@ -27,7 +27,7 @@ def disable_widgets(root: tk.Tk) -> None:
 def enable_widgets(root: tk.Tk) -> None:
     for widget in root.winfo_children():
         try:
-            widget.configure(state="normal")
+            widget.configure(state="normal")  # type: ignore
         except:
             pass
 

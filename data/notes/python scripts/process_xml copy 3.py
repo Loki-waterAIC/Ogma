@@ -10,7 +10,7 @@ if OGMA_PATH not in sys.path:
 from data.hidden.files import XML_FILES
 
 # Parse an XML file
-tree: ET.ElementTree = ET.parse(source=XML_FILES[0])
+tree: ET.ElementTree = ET.parse(source=XML_FILES[0]) # type: ignore
 root: ET.Element | Any = tree.getroot()
 
 # # Access elements
@@ -18,13 +18,13 @@ root: ET.Element | Any = tree.getroot()
 #     print(child.tag, child.attrib)
 
 # Find all {http://schemas.openxmlformats.org/wordprocessingml/2006/main}txbxContent elements
-txbx_contents: list[ET.Element] | Any = root.findall(
+text_box_contents: list[ET.Element] | Any = root.findall(
     ".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}txbxContent"
 )
 
-# Iterate through each txbxContent and find all {http://schemas.openxmlformats.org/wordprocessingml/2006/main}t elements
-for txbx_content in txbx_contents:
-    t_elements: list[ET.Element] | Any = txbx_content.findall(
+# Iterate through each text box Content and find all {http://schemas.openxmlformats.org/wordprocessingml/2006/main}t elements
+for text_box_content in text_box_contents:
+    t_elements: list[ET.Element] | Any = text_box_content.findall(
         ".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t"
     )
     for t_elem in t_elements:

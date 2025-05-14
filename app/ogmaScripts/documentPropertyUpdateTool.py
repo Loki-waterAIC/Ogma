@@ -50,7 +50,7 @@ def __helper_update_properties(doc_path: str, properties: dict) -> None:
         raise Exception(err_message)
 
     for k in properties:
-        document.custom_properties[k] = properties[k]
+        document.custom_properties[k] = properties[k] # type: ignore
 
     document.save(path_or_stream=doc_path)
 
@@ -79,7 +79,7 @@ def document_property_update_tool(doc_paths: list[str], properties: dict, export
             "File Name": "DocumentFileName"
         }
     """
-    # Sanatizing input file paths
+    # Sanitizing input file paths
     # Throw Error after processing
     path_violation_list: list[str] = list()
     validated_doc_paths: list[str] = list()
@@ -99,8 +99,8 @@ def document_property_update_tool(doc_paths: list[str], properties: dict, export
         for doc_path in validated_doc_paths:
             __helper_update_properties(doc_path=doc_path,properties=properties)
     except Exception as e:
-        # error can occure if a a document is open.
-        _err_message: str = f"[documentPropertyUpdateTool.document_properity_update_tool 0] Exception: {e}"
+        # error can occur if a a document is open.
+        _err_message: str = f"[documentPropertyUpdateTool.document_property_update_tool 0] Exception: {e}"
         print(_err_message)
         raise Exception(_err_message)
 
@@ -123,11 +123,11 @@ def document_property_update_tool(doc_paths: list[str], properties: dict, export
         loop_err_message:str = ""
         for e in errors:
             if isinstance(e,AttributeError):
-                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] AttributeError occured:\n{e}"
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_property_update_tool 1] AttributeError occurred:\n{e}"
             elif isinstance(e,cscriptError):
-                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 1] cscriptError occured:\n{e}"
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_property_update_tool 1] cscriptError occurred:\n{e}"
             elif isinstance(e,Exception):
-                loop_err_message += f"\n[documentPropertyUpdateTool.document_properity_update_tool 2] Exception occured:\n{e}"
+                loop_err_message += f"\n[documentPropertyUpdateTool.document_property_update_tool 2] Exception occurred:\n{e}"
 
         if loop_err_message:
             print(loop_err_message)
@@ -135,7 +135,7 @@ def document_property_update_tool(doc_paths: list[str], properties: dict, export
 
     if path_violation_list:
         _err_message: str = ""
-        _err_message += "[documentPropertyUpdateTool.document_properity_update_tool 3] Invalid Files:"
+        _err_message += "[documentPropertyUpdateTool.document_property_update_tool 3] Invalid Files:"
         for invalid_path in path_violation_list:
             _err_message += f"\n\t{str(invalid_path)}"
         print(_err_message)

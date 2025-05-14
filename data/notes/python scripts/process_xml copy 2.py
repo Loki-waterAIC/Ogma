@@ -10,7 +10,7 @@ if OGMA_PATH not in sys.path:
 from data.hidden.files import XML_FILES
 
 # Parse an XML file
-tree: ET.ElementTree = ET.parse(source=XML_FILES[0])
+tree: ET.ElementTree = ET.parse(source=XML_FILES[0]) # type: ignore
 root: ET.Element | Any = tree.getroot()
 
 # # Access elements
