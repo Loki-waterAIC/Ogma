@@ -29,7 +29,7 @@ import app.ogmaScripts.callToCScript as callToCScript
 from app.ogmaScripts.cscriptErrors import cscriptError
 
 
-def __helper_update_properties(doc_path: str, properties: dict) -> None:
+def __helper_set_properties(doc_path: str, properties: dict) -> None:
     '''
     __helper_update_properties updates the default values of a property in a document's properties.
 
@@ -97,7 +97,7 @@ def document_property_update_tool(doc_paths: list[str], properties: dict, export
     try:
         # for each path, update properties in a unique thread
         for doc_path in validated_doc_paths:
-            __helper_update_properties(doc_path=doc_path,properties=properties)
+            __helper_set_properties(doc_path=doc_path,properties=properties)
     except Exception as e:
         # error can occur if a a document is open.
         _err_message: str = f"[documentPropertyUpdateTool.document_property_update_tool 0] Exception: {e}"

@@ -31,7 +31,7 @@ from app.ogmaScripts.cscriptErrors import cscriptError
 from app.ogmaGlobal import LOCK_FILE_PATH
 
 # True if Should word be visible; False if word should not be visible
-WORDVISIBLITY = False
+WORD_VISIBILITY = False
 
 
 def __template_path_func() -> str:
@@ -58,7 +58,7 @@ def docx_to_pdf(doc_paths: list[str], retry: int = 0) -> None:
     # recurse end
     if retry > 3:
         if doc_paths:
-            raise cscriptError(f"[callToCScript.docx_to_pdf] cscriptError occured with:\n{doc_paths}")
+            raise cscriptError(f"[callToCScript.docx_to_pdf] cscriptError occurred with:\n{doc_paths}")
         return
 
     retry_list: list[str] = []
@@ -91,7 +91,7 @@ def update_doc_properties_multi(doc_paths: list[str], export_pdf: bool = False) 
     # set the macro
     macro: str = r"ogmaMacroAllFiles"
     template_path: str = __template_path_func()
-    wordVisible: bool = WORDVISIBLITY
+    wordVisible: bool = WORD_VISIBILITY
 
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,
@@ -116,7 +116,7 @@ def update_doc_properties(doc_paths: list[str], export_pdf: bool = False) -> Non
     # set the macro
     macro: str = r"ogmaMacro"
     template_path: str = __template_path_func()
-    wordVisible: bool = WORDVISIBLITY
+    wordVisible: bool = WORD_VISIBILITY
 
     runWordMacroWin.run_word_macro_on_files(
         doc_paths=doc_paths,

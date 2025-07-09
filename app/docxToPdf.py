@@ -23,7 +23,7 @@ import requests
 from dotenv import load_dotenv
 from requests import HTTPError
 
-PROJECT_PATH: Path = Path(__file__).resolve().parent
+PROJECT_PATH: Path = Path(__file__).resolve().parents[1]
 DATA_PATH: Path = PROJECT_PATH / "data"
 ENV_LOCATION: Path = PROJECT_PATH / ".env"
 

@@ -88,6 +88,7 @@ def run_json(json_path: str) -> None:
 
             # MARK: detect doc_properties and files
             if all([(i in data) for i in ["files", "doc_properties"]]):
+                # for i in list[], return if i is in data.keys
                 # grab data
                 files: list[str] = data["files"]
                 doc_props: dict[str, str] = data["doc_properties"]
