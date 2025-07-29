@@ -32,6 +32,7 @@ import app.ogmaScripts.runWordMacroWin as runWordMacroWin
 from app.ogmaScripts.documentPropertyUpdateTool import document_property_update_tool
 from app.ogmaScripts.docPropertyUpdateGui import run_gui
 
+
 def run_json_list(json_paths: list[str]):
     for path in json_paths:
         run_json(json_path=path)
@@ -164,8 +165,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--version", "--v", "-V", dest="version", action="version", version="%(prog)s " f"version {ogmaGlobal.APP_VERSION}"
     )
-    
-    
+
     # parse inputs
     args: argparse.Namespace = parser.parse_args()
 
@@ -178,6 +178,6 @@ if __name__ == "__main__":
 
     if args.jsonPaths:
         run_json_list(json_paths=args.jsonPaths)
-        
+
     if args.gui:
         run_gui()
